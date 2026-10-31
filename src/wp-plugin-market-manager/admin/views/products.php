@@ -3,6 +3,19 @@ use WPLM\Repositories\CategoryRepository;
 use WPLM\Repositories\ProductRepository;
 
 defined('ABSPATH') || exit;
+
+/**
+ * نوع محصول: plugin، theme، windows.
+ */
+function self_product_type_label(string $type): string
+{
+    $labels = [
+        'plugin' => 'افزونه',
+        'theme' => 'قالب',
+        'windows' => 'برنامه ویندوز',
+    ];
+    return $labels[$type] ?? $type;
+}
 $title = 'ثبت و مدیریت افزونه و قالب';
 $info_notice = 'برای افزودن محصول جدید روی دکمه افزودن کلیک کنید؛ فرم به صورت مودال و ایجکسی ذخیره می‌شود.';
 require WPLM_PATH . 'admin/views/header.php';
@@ -28,7 +41,7 @@ $categories = $cat_repo->all(200, true);
                         <td><?php if (!empty($product->cover_url)) : ?><img class="wplm-thumb" src="<?php echo esc_url($product->cover_url); ?>" alt=""><?php else : ?><span class="wplm-thumb empty">—</span><?php endif; ?></td>
                         <td><?php echo esc_html($product->name); ?></td>
                         <td dir="ltr"><code><?php echo esc_html($product->slug); ?></code></td>
-                        <td><?php echo 'theme' === $product->type ? 'قالب' : 'افزونه'; ?></td>
+                        <td><?php echo self_product_type_label($product->type); ?></td>
                         <td dir="ltr"><?php echo esc_html($product->version); ?></td>
                         <td><?php echo esc_html(number_format_i18n((float) $product->price)); ?> <?php echo esc_html($product->currency); ?></td>
                         <td><?php echo $cat ? esc_html($cat->name) : '—'; ?></td>
@@ -76,7 +89,7 @@ $categories = $cat_repo->all(200, true);
             </div>
             <label>دسته‌بندی<select name="category_id"><option value="0">بدون دسته‌بندی</option><?php foreach ($categories as $cat) : ?><option value="<?php echo esc_attr($cat->id); ?>"><?php echo esc_html($cat->name); ?></option><?php endforeach; ?></select></label>
             <div class="wplm-two">
-                <label>نوع<select name="type"><option value="plugin">افزونه</option><option value="theme">قالب</option></select></label>
+                <label>نوع<select name="type"><option value="plugin">افزونه</option><option value="theme">قالب</option><option value="windows">برنامه ویندوز</option></select></label>
                 <label>وضعیت لایسنس محصول<select name="product_state"><option value="draft">پیش‌نویس</option><option value="active_required">فعال لایسنس‌دار</option><option value="active_none">فعال بدون لایسنس</option></select></label>
             </div>
             <label class="wplm-check"><input type="checkbox" name="is_visible" value="1" checked> نمایش محصول در فرانت فروشگاه و شورتکدها</label>

@@ -25,7 +25,7 @@ final class ProductRepository
             $where[] = 'is_visible = 1';
         }
 
-        if (!empty($args['type']) && in_array($args['type'], ['plugin', 'theme'], true)) {
+        if (!empty($args['type']) && in_array($args['type'], ['plugin', 'theme', 'windows'], true)) {
             $where[] = 'type = %s';
             $params[] = $args['type'];
         }

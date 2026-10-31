@@ -119,6 +119,51 @@ new WPLM_Client_Kit_Updater([
 | `license_required` | — | `false` برای محصولات بدون لایسنس |
 | `name` / `author` | — | اطلاعات افزونه برای plugins_api |
 
+## 4b. اتصال افزونه برای برنامه ویندوز (machine_id)
+
+برای فروش برنامه‌های ویندوز، محصول را با نوع **برنامه ویندوز** در پنل مدیریت ثبت کنید. فعال‌سازی لایسنس بر اساس شناسهٔ ماشین کامپیوتر انجام می‌شود.
+
+### ساختار کار
+
+1. برنامه ویندوز در اولین اجرا machine_id را تولید می‌کند (مثلاً با hash کارت گرافیک + مادربرد، 32 کاراکتری هگز).
+2. ماشین کاربر machine_id را به سامانه فروش ارسال می‌دهد:
+   - در خرید از فروشگاه: فیلد machine_id در سبد خرید.
+   - فعال‌سازی دستی: `POST /wp-json/wplm/v1/license/activate` با `machine_id`.
+   - بررسی دوره‌ای: `POST /wp-json/wplm/v1/license/check` با `machine_id`.
+3. لایسنس روی همان کامپیوتر (machine_id) فعال می‌شود و در صفحه لایسنس‌ها (`page=wplm-licenses`) در بخش دامنه‌ها / machine_ids نمایش داده می‌شود.
+4. سقف فعال‌سازی machine_ids با فیلد تعداد فعال‌سازی (`allowed_domains`) کنترل می‌شود.
+
+### مثال API (برنامه ویندوز)
+
+```http
+POST https://amolnovin.ir/wp-json/wplm/v1/license/activate
+Content-Type: application/json
+
+{
+  "license_key": "XXXX-XXXX-XXXX-XXXX",
+  "product_slug": "my-app",
+  "machine_id": "4d75bfe14a964dcfb15b6741b2ef6bc2"
+}
+```
+
+### client kit با machine_id (از WP)
+
+اگر بخواهید کلاینت وردپرسی هم machine_id ارسال کند (مثلاً برای محصولات ویندوز که از WP قابل مدیریت هستند):
+
+```php
+$license = new WPLM_Client_Kit_License([
+    'api_base'       => 'https://amolnovin.ir/wp-json/wplm/v1',
+    'product_slug'   => 'my-app',
+    'plugin_file'    => __FILE__,
+    'activation'     => 'machine',
+    'license_option' => 'my_plugin_license_key',
+    // machine_id می‌تواند از config یا option reading:
+    'machine_id'     => '4d75bfe14a964dcfb15b6741b2ef6bc2',
+]);
+```
+
+با این تنظیمات، درخواست‌های activate/check پارامتر `machine_id` (و نه domain) ارسال می‌کنند و در صفحه فعال‌سازی فیلد machine_id نمایش داده می‌شود.
+
 ## 5. چک‌لیست نهایی قبل از انتشار افزونه مشتری
 
 - [ ] پوشه `wplm-client-kit` داخل افزونه قرار گرفته است.

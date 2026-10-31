@@ -12,6 +12,28 @@ defined('ABSPATH') || exit;
 
 final class Shortcodes
 {
+    /**
+     * نام نوع محصول: plugin، theme، windows.
+     */
+    private static function type_label(string $type): string
+    {
+        $labels = ['plugin' => 'افزونه', 'theme' => 'قالب', 'windows' => 'برنامه ویندوز'];
+        return $labels[$type] ?? $type;
+    }
+
+    /**
+     * آیا سبد خرید حداقل یک محصول windows دارد؟
+     */
+    private static function cart_has_windows(array $products): bool
+    {
+        foreach ($products as $product) {
+            if ('windows' === $product->type) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static function front_nav(): string
     {
         $store_url = Options::page_url('store_page_id');
@@ -78,7 +100,7 @@ final class Shortcodes
                 <?php foreach ($products as $product) :
                     $product_url = add_query_arg('product', $product->slug, $store_url);
                     $license_label = 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار';
-                    $type_label = 'theme' === $product->type ? 'قالب' : 'افزونه';
+                    $type_label = self_type_label($product->type);
                 ?>
                     <article class="wplm-home-product-card">
                         <a class="wplm-home-product-cover" href="<?php echo esc_url($product_url); ?>">
@@ -138,7 +160,7 @@ final class Shortcodes
             return self::product_detail($slug);
         }
 
-        $type = isset($_GET['type']) && in_array($_GET['type'], ['plugin', 'theme'], true) ? sanitize_key($_GET['type']) : '';
+        $type = isset($_GET['type']) && in_array($_GET['type'], ['plugin', 'theme', 'windows'], true) ? sanitize_key($_GET['type']) : '';
         $category_slug = isset($_GET['category']) ? sanitize_title(wp_unslash($_GET['category'])) : '';
         $license_filter = isset($_GET['license']) && in_array($_GET['license'], ['required','none'], true) ? sanitize_key($_GET['license']) : '';
         $cat_repo = new CategoryRepository();
@@ -171,6 +193,7 @@ final class Shortcodes
                 <a class="<?php echo !$type && !$category ? 'active' : ''; ?>" href="<?php echo esc_url($base); ?>">همه</a>
                 <a class="<?php echo 'plugin' === $type ? 'active' : ''; ?>" href="<?php echo esc_url(add_query_arg('type', 'plugin', $base)); ?>">افزونه‌ها</a>
                 <a class="<?php echo 'theme' === $type ? 'active' : ''; ?>" href="<?php echo esc_url(add_query_arg('type', 'theme', $base)); ?>">قالب‌ها</a>
+                <a class="<?php echo 'windows' === $type ? 'active' : ''; ?>" href="<?php echo esc_url(add_query_arg('type', 'windows', $base)); ?>">برنامه‌های ویندوز</a>
                 <a class="<?php echo 'required' === $license_filter ? 'active' : ''; ?>" href="<?php echo esc_url(add_query_arg('license', 'required', $base)); ?>">لایسنس‌دار</a>
                 <a class="<?php echo 'none' === $license_filter ? 'active' : ''; ?>" href="<?php echo esc_url(add_query_arg('license', 'none', $base)); ?>">بدون لایسنس</a>
                 <?php foreach ($categories as $cat) : ?>
@@ -182,7 +205,7 @@ final class Shortcodes
                     <article class="wplm-public-card">
                         <?php if (!empty($product->cover_url)) : ?><img src="<?php echo esc_url($product->cover_url); ?>" alt="<?php echo esc_attr($product->name); ?>"><?php endif; ?>
                         <div class="wplm-card-body">
-                            <div class="wplm-card-tags"><a class="wplm-pill" href="<?php echo esc_url(add_query_arg('type', $product->type, $base)); ?>"><?php echo 'theme' === $product->type ? 'قالب' : 'افزونه'; ?></a><a class="wplm-pill secondary" href="<?php echo esc_url(add_query_arg('license', ($product->license_mode ?? 'required'), $base)); ?>"><?php echo 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار'; ?></a></div>
+                            <div class="wplm-card-tags"><a class="wplm-pill" href="<?php echo esc_url(add_query_arg('type', $product->type, $base)); ?>"><?php echo self_type_label($product->type); ?></a><a class="wplm-pill secondary" href="<?php echo esc_url(add_query_arg('license', ($product->license_mode ?? 'required'), $base)); ?>"><?php echo 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار'; ?></a></div>
                             <h3><?php echo esc_html($product->name); ?></h3>
                             <p><?php echo esc_html(wp_trim_words($product->short_description ?: wp_strip_all_tags(do_shortcode((string) $product->description)), 45, '...')); ?></p>
                             <div class="wplm-card-footer">
@@ -215,7 +238,7 @@ final class Shortcodes
             <a class="wplm-back" href="<?php echo esc_url(remove_query_arg(['product','cart'])); ?>">← بازگشت به فروشگاه</a>
             <section class="wplm-product-hero">
                 <div class="wplm-product-hero-content">
-                    <span class="wplm-pill"><?php echo 'theme' === $product->type ? 'قالب حرفه‌ای وردپرس' : 'افزونه حرفه‌ای وردپرس'; ?></span>
+                    <span class="wplm-pill"><?php echo 'windows' === $product->type ? 'برنامه حرفه‌ای ویندوز' : ('theme' === $product->type ? 'قالب حرفه‌ای وردپرس' : 'افزونه حرفه‌ای وردپرس'); ?></span>
                     <h1><?php echo esc_html($product->name); ?></h1>
                     <p><?php echo esc_html($product->short_description ?: wp_trim_words(wp_strip_all_tags((string)$product->description), 28)); ?></p>
                     <div class="wplm-product-meta">
@@ -293,7 +316,7 @@ final class Shortcodes
                                         <?php if (!empty($product->cover_url)) : ?><img src="<?php echo esc_url($product->cover_url); ?>" alt=""><?php endif; ?>
                                         <div><strong><?php echo esc_html($product->name); ?></strong><small><?php echo esc_html($product->short_description); ?></small></div>
                                     </td>
-                                    <td><?php echo 'theme' === $product->type ? 'قالب' : 'افزونه'; ?></td>
+                                    <td><?php echo self_type_label($product->type); ?></td>
                                     <td><span class="wplm-pill secondary"><?php echo 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار'; ?></span></td>
                                     <td><strong><?php echo esc_html(number_format_i18n((float) $product->price)); ?></strong> <?php echo esc_html($product->currency); ?></td>
                                     <td><a class="wplm-remove" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_remove_from_cart','product_id'=>(int)$product->id], admin_url('admin-post.php')), 'wplm_remove_cart_item')); ?>">×</a></td>
@@ -313,7 +336,11 @@ final class Shortcodes
                         <label>نام و نام خانوادگی<input name="customer_name" required value="<?php echo esc_attr($user->display_name); ?>"></label>
                         <label>ایمیل<input name="customer_email" type="email" required dir="ltr" value="<?php echo esc_attr($user->user_email); ?>"></label>
                         <label>موبایل<input name="customer_mobile" required dir="ltr" placeholder="09123456789"></label>
-                        <label>دامنه برای فعال‌سازی اولیه<input name="domain" dir="ltr" placeholder="example.com"></label>
+                        <?php if (self_cart_has_windows($products)) : ?>
+                            <label>شناسه ماشین (machine_id) برای فعال‌سازی روی کامپیوتر<input name="machine_id" dir="ltr" placeholder="4d75bfe14a964dcfb15b6741b2ef6bc2"></label>
+                        <?php else : ?>
+                            <label>دامنه برای فعال‌سازی اولیه<input name="domain" dir="ltr" placeholder="example.com"></label>
+                        <?php endif; ?>
                         <label>کد تخفیف، اختیاری<input name="discount_code" dir="ltr" placeholder="مثلاً SUMMER30"></label>
                         <button class="wplm-btn wplm-btn-block" type="submit"><?php echo $subtotal > 0 ? 'پرداخت آنلاین' : 'ثبت رایگان و دریافت'; ?></button>
                     </form>

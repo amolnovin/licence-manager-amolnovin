@@ -2,7 +2,7 @@
 Contributors: arena
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.2.3
+Stable tag: 1.3.0
 License: GPLv2 or later
 
 سامانه اختصاصی فروش، معرفی، لایسنس آنلاین، بروزرسانی و پیامک برای افزونه‌ها و قالب‌های وردپرس.
@@ -131,3 +131,15 @@ client/wplm-amolnovin-license-manager.zip
 
 == نسخه 1.2.3 ==
 - دسترسی کامل افزونه برای نقش «مدیر پروژه» (contracts) با capability ani_contracts_manager از طریق map_meta_cap.
+
+== نسخه 1.3.0: پشتیبانی از برنامه‌های ویندوز ==
+
+- اضافه شدن نوع جدید محصول «برنامه ویندوز» در مودال محصولات.
+- لایسنس‌های ویندوز بر اساس شناسهٔ ماشین (machine_id) فعال می‌شوند؛ machine_id هر کامپیوتر یکتا است (مثلاً 4d75bfe14a964dcfb15b6741b2ef6bc2).
+- فیلد machine_ids به جدول wp_wplm_licenses و machine_id به جدول wp_wplm_license_requests اضافه شد.
+- بررسی و فعال‌سازی APIها (license/activate، license/check، license/request، updates/check) از پارامتر machine_id پشتیبانی می‌کنند.
+- صفحه لایسنس‌ها (page=wplm-licenses): نمایش دامنه‌های فعال و machine_ids فعال‌شده با جداکننده و امکان حذف هر کدام.
+- مودال ایجاد/ویرایش لایسنس: فیلد machine_ids برای محصولات ویندوز نمایش داده می‌شود و فیلد دامنه برای آن‌ها پنهان می‌شود.
+- خرید از فروشگاه: برای محصولات ویندوز در سبد خرید فیلد machine_id نمایش داده می‌شود و پس از پرداخت، لایسنس روی همان کامپیوتر صادر می‌شود.
+- سقف فعال‌سازی: تعداد مجاز machine_ids با فیلد تعداد فعال‌سازی (allowed_domains) کنترل می‌شود.
+- client kit: کلاس WPLM_Client_Kit_License با گزینه activation => 'machine' از machine_id پشتیبانی می‌کند و آپدیتر machine_id را در درخواست آپدیت ارسال می‌کند.

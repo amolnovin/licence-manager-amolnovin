@@ -47,12 +47,18 @@ final class LicenseController
             return new WP_REST_Response(['success' => false, 'code' => 'invalid_email'], 422);
         }
 
+        $machine_id = Security::sanitize_machine_id((string) $request->get_param('machine_id'));
+        if ($machine_id && !Security::looks_like_machine_id($machine_id) && 'windows' !== (new ProductRepository())->find((int) $product->id)->type) {
+            return new WP_REST_Response(['success' => false, 'code' => 'invalid_machine_id'], 422);
+        }
+
         $created = (new LicenseRepository())->create_request([
             'product_id' => (int) $product->id,
             'customer_name' => sanitize_text_field((string) $request->get_param('customer_name')),
             'customer_email' => $email,
             'customer_mobile' => sanitize_text_field((string) $request->get_param('customer_mobile')),
             'domain' => Security::sanitize_domain((string) $request->get_param('domain')),
+            'machine_id' => $machine_id,
             'note' => sanitize_textarea_field((string) $request->get_param('note')),
         ]);
 
@@ -73,9 +79,10 @@ final class LicenseController
         $result = (new LicenseRepository())->activate_domain(
             sanitize_text_field((string) $request->get_param('license_key')),
             (int) $product->id,
-            Security::sanitize_domain((string) $request->get_param('domain'))
+            Security::sanitize_domain((string) $request->get_param('domain')),
+            Security::sanitize_machine_id((string) $request->get_param('machine_id'))
         );
-        return new WP_REST_Response(['success' => (bool) $result['valid'], 'code' => $result['code']], $result['valid'] ? 200 : 403);
+        return new WP_REST_Response(['success' => (bool) $result['valid'], 'code' => $result['code'], 'machine_id' => $result['machine_id'] ?? null], $result['valid'] ? 200 : 403);
     }
 
     public function check(WP_REST_Request $request): WP_REST_Response
@@ -92,8 +99,9 @@ final class LicenseController
         $result = (new LicenseRepository())->validate(
             sanitize_text_field((string) $request->get_param('license_key')),
             (int) $product->id,
-            Security::sanitize_domain((string) $request->get_param('domain'))
+            Security::sanitize_domain((string) $request->get_param('domain')),
+            Security::sanitize_machine_id((string) $request->get_param('machine_id'))
         );
-        return new WP_REST_Response(['success' => (bool) $result['valid'], 'code' => $result['code']], $result['valid'] ? 200 : 403);
+        return new WP_REST_Response(['success' => (bool) $result['valid'], 'code' => $result['code'], 'machine_id' => $result['machine_id'] ?? null], $result['valid'] ? 200 : 403);
     }
 }

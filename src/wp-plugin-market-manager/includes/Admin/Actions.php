@@ -51,7 +51,7 @@ final class Actions
             'category_id' => isset($source['category_id']) ? absint($source['category_id']) : 0,
             'name' => isset($source['name']) ? sanitize_text_field(wp_unslash($source['name'])) : '',
             'slug' => isset($source['slug']) ? sanitize_title(wp_unslash($source['slug'])) : '',
-            'type' => isset($source['type']) && in_array($source['type'], ['plugin', 'theme'], true) ? sanitize_key($source['type']) : 'plugin',
+            'type' => isset($source['type']) && in_array($source['type'], ['plugin', 'theme', 'windows'], true) ? sanitize_key($source['type']) : 'plugin',
             'cover_url' => isset($source['cover_url']) ? esc_url_raw(wp_unslash($source['cover_url'])) : '',
             'short_description' => isset($source['short_description']) ? sanitize_textarea_field(wp_unslash($source['short_description'])) : '',
             'description' => isset($source['description']) ? wp_kses_post(wp_unslash($source['description'])) : '',
@@ -98,7 +98,7 @@ final class Actions
             'id' => isset($_POST['id']) ? absint($_POST['id']) : 0,
             'name' => isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '',
             'slug' => isset($_POST['slug']) ? sanitize_title(wp_unslash($_POST['slug'])) : '',
-            'type' => isset($_POST['type']) && in_array($_POST['type'], ['all', 'plugin', 'theme'], true) ? sanitize_key($_POST['type']) : 'all',
+            'type' => isset($_POST['type']) && in_array($_POST['type'], ['all', 'plugin', 'theme', 'windows'], true) ? sanitize_key($_POST['type']) : 'all',
             'description' => isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '',
             'status' => isset($_POST['status']) && in_array($_POST['status'], ['active', 'draft'], true) ? sanitize_key($_POST['status']) : 'active',
         ];
@@ -204,6 +204,7 @@ final class Actions
             'customer_mobile' => isset($_POST['customer_mobile']) ? sanitize_text_field(wp_unslash($_POST['customer_mobile'])) : '',
             'allowed_domains' => isset($_POST['allowed_domains']) ? max(1, absint($_POST['allowed_domains'])) : 1,
             'domains' => isset($_POST['domains']) ? sanitize_textarea_field(wp_unslash($_POST['domains'])) : '',
+            'machine_ids' => isset($_POST['machine_ids']) ? sanitize_textarea_field(wp_unslash($_POST['machine_ids'])) : '',
             'status' => isset($_POST['status']) ? sanitize_key(wp_unslash($_POST['status'])) : 'active',
             'expires_at' => isset($_POST['expires_at']) && $_POST['expires_at'] !== '' ? sanitize_text_field(wp_unslash($_POST['expires_at'])) . ' 23:59:59' : null,
         ];
@@ -246,7 +247,10 @@ final class Actions
         Security::verify_nonce('wplm_license_action');
         $id = isset($_GET['id']) ? absint($_GET['id']) : 0;
         $domain = isset($_GET['domain']) ? sanitize_text_field(wp_unslash($_GET['domain'])) : '';
-        if ($id && $domain) {
+        $machine_id = isset($_GET['machine_id']) ? sanitize_text_field(wp_unslash($_GET['machine_id'])) : '';
+        if ($id && $machine_id) {
+            (new LicenseRepository())->remove_machine_id($id, $machine_id);
+        } elseif ($id && $domain) {
             (new LicenseRepository())->remove_domain($id, $domain);
         }
         Security::redirect('wplm-licenses', ['saved' => 1, 'edit' => $id]);

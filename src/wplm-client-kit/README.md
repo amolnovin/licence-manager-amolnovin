@@ -14,6 +14,25 @@
 
 پوشه `wplm-client-kit` را داخل افزونه مشتری قرار دهید و مطابق `docs/README-FA.md` در فایل اصلی افزونه لود کنید.
 
+## پشتیبانی از برنامه‌های ویندوز (machine_id)
+
+از نسخه 1.4.0، کلاینت لایسنس از فعال‌سازی بر اساس شناسهٔ ماشین پشتیبانی می‌کند:
+
+```php
+$license = new WPLM_Client_Kit_License([
+    'api_base'       => 'https://amolnovin.ir/wp-json/wplm/v1',
+    'product_slug'   => 'my-app',
+    'plugin_file'    => __FILE__,
+    'activation'     => 'machine', // domain | machine
+    'machine_id'     => '4d75bfe14a964dcfb15b6741b2ef6bc2',
+]);
+```
+
+با `activation => 'machine'`:
+- درخواست‌های activate/check پارامتر `machine_id` ارسال می‌کنند.
+- در صفحه فعال‌سازی فیلد machine_id نمایش داده می‌شود.
+- آپدیتر `machine_id` را در درخواست بروزرسانی ارسال می‌کند.
+
 ## API آماده برای آمل نوین
 
 ```text
@@ -45,8 +64,8 @@ wplm-amolnovin-license-manager
 ## نسخه کیت
 
 ```text
-License Client: 1.4.0
-Updater: 1.1.0
+License Client: 1.5.0
+Updater: 1.2.0
 ```
 
 ## مدیریت خطای «خطا در برقراری ارتباط با پایگاه‌داده»

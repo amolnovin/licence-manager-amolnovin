@@ -76,6 +76,27 @@ final class Security
         return sanitize_text_field($domain);
     }
 
+    /**
+     * پاکاسازی شناسه ماشین (machine_id) برای برنامه‌های ویندوز:
+     * فقط حروف a-f و اعداد 0-9، حداکثر ۶۴ کاراکتر، حروف کوچک.
+     * نمونه: 4d75bfe14a964dcfb15b6741b2ef6bc2
+     */
+    public static function sanitize_machine_id(string $machine_id): string
+    {
+        $machine_id = strtolower(trim($machine_id));
+        $machine_id = preg_replace('/[^a-f0-9]/i', '', $machine_id);
+        return substr($machine_id, 0, 64);
+    }
+
+    /**
+     * آیا مقدار داده‌شده شبیه یک machine_id معتبر است؟
+     * شکلมาตรฐาน: ۳۲ کاراکتر هگز (مثل fingerprint کارتگرافی).
+     */
+    public static function looks_like_machine_id(string $value): bool
+    {
+        return (bool) preg_match('/^[a-f0-9]{32}$/i', trim($value));
+    }
+
 
     public static function client_ip(): string
     {

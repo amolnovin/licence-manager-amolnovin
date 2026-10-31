@@ -25,6 +25,7 @@ if (!class_exists('WPLM_Plugin_Updater')) {
                 'license_key'    => '',
                 'license_option' => '',
                 'license_required' => true,
+                'machine_id'      => '',
                 'name'           => '',
                 'author'         => '',
             ];
@@ -131,6 +132,7 @@ if (!class_exists('WPLM_Plugin_Updater')) {
                     'version'      => $this->config['version'],
                     'license_key'  => $license,
                     'domain'       => $this->domain(),
+                    'machine_id'   => $this->config['machine_id'],
                 ],
             ]);
 
