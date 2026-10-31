@@ -5,7 +5,7 @@
  * Shows updates for commercial plugins in WordPress Plugins/Updates screens.
  * Compatible with wp-plugin-market-manager.
  *
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 if (!defined('ABSPATH')) {
@@ -29,6 +29,7 @@ if (!class_exists('WPLM_Client_Kit_Updater')) {
                 'license_key'    => '',
                 'license_option' => '',
                 'license_required' => true,
+                'machine_id'      => '',
                 'name'           => '',
                 'author'         => '',
                 'cache_ttl'      => 6 * HOUR_IN_SECONDS,
@@ -193,7 +194,7 @@ if (!class_exists('WPLM_Client_Kit_Updater')) {
                 'sslverify'   => true,
                 'headers'     => [
                     'Accept' => 'application/json',
-                    'User-Agent' => 'WPLM-Plugin-Updater/1.1; ' . home_url('/'),
+                    'User-Agent' => 'WPLM-Plugin-Updater/1.2; ' . home_url('/'),
                 ],
                 'body'        => [
                     'product_slug' => $this->config['product_slug'],
@@ -201,6 +202,7 @@ if (!class_exists('WPLM_Client_Kit_Updater')) {
                     'version'      => $this->config['version'],
                     'license_key'  => $license,
                     'domain'       => $this->domain(),
+                    'machine_id'   => $this->config['machine_id'],
                 ],
             ]);
 

@@ -72,6 +72,7 @@ final class PurchaseService
         $email = isset($_POST['customer_email']) ? sanitize_email(wp_unslash($_POST['customer_email'])) : '';
         $mobile = isset($_POST['customer_mobile']) ? sanitize_text_field(wp_unslash($_POST['customer_mobile'])) : '';
         $domain = isset($_POST['domain']) ? Security::sanitize_domain(wp_unslash($_POST['domain'])) : '';
+        $machine_id = isset($_POST['machine_id']) ? Security::sanitize_machine_id(wp_unslash($_POST['machine_id'])) : '';
         $discount_code = isset($_POST['discount_code']) ? sanitize_text_field(wp_unslash($_POST['discount_code'])) : '';
 
         if (!$name || !$email || !is_email($email) || !$mobile) {
@@ -101,7 +102,7 @@ final class PurchaseService
             'customer_email' => $email,
             'customer_mobile' => $mobile,
             'domain' => $domain,
-            'meta' => ['cart_product_ids' => array_map(static fn($p) => (int) $p->id, $products), 'discount' => $calculated['discount_payload']],
+            'meta' => ['cart_product_ids' => array_map(static fn($p) => (int) $p->id, $products), 'discount' => $calculated['discount_payload'], 'machine_id' => $machine_id],
         ]);
 
         foreach ($products as $product) {
@@ -307,6 +308,9 @@ final class PurchaseService
             return [];
         }
         $license_repo = new LicenseRepository();
+        $order_meta = json_decode((string) ($order->meta ?? ''), true);
+        $order_meta = is_array($order_meta) ? $order_meta : [];
+        $machine_id = !empty($order_meta['machine_id']) ? Security::sanitize_machine_id((string) $order_meta['machine_id']) : '';
         $licenses = [];
         foreach ($items as $item) {
             if ('none' === ($item->license_mode ?? 'required')) {
@@ -319,7 +323,7 @@ final class PurchaseService
                 }
                 continue;
             }
-            $request = $license_repo->create_request(['product_id' => (int) $item->product_id, 'customer_name' => $order->customer_name, 'customer_email' => $order->customer_email, 'customer_mobile' => $order->customer_mobile, 'domain' => $order->domain, 'source' => $order->gateway ?: 'order', 'order_id' => (int) $order->id, 'note' => 'ایجاد خودکار پس از پرداخت سفارش #' . (int) $order->id]);
+            $request = $license_repo->create_request(['product_id' => (int) $item->product_id, 'customer_name' => $order->customer_name, 'customer_email' => $order->customer_email, 'customer_mobile' => $order->customer_mobile, 'domain' => $order->domain, 'machine_id' => $machine_id, 'source' => $order->gateway ?: 'order', 'order_id' => (int) $order->id, 'note' => 'ایجاد خودکار پس از پرداخت سفارش #' . (int) $order->id]);
             $license = $license_repo->approve_request((int) $request->id);
             if ($license) {
                 $repo->update_item_license((int) $item->id, (int) $license->id);

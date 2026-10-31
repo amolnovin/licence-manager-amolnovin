@@ -83,6 +83,7 @@
     $f.find('[name="allowed_domains"]').val('1');
     $f.find('[name="status"]').val('active');
     $('[data-wplm-license-modal-title]').text('ایجاد لایسنس دستی');
+    toggleMachineField('');
     if(data){
       $('[data-wplm-license-modal-title]').text('ویرایش لایسنس');
       Object.keys(data).forEach(function(k){
@@ -90,8 +91,29 @@
         $f.find('[name="'+k+'"]').val(data[k]);
       });
     }
+    syncLicenseProductType();
     $m.addClass('is-open').attr('aria-hidden','false');
   }
+
+  // نمایش یا پنهان‌سازی فیلد machine_ids براساس نوع محصول انتخاب‌شده.
+  function syncLicenseProductType(){
+    var $sel = licenseForm().find('[name="product_id"]');
+    var type = $sel.length ? ($sel.find('option:selected').data('type') || '') : '';
+    toggleMachineField(type);
+  }
+
+  function toggleMachineField(type){
+    if(type === 'windows'){
+      $('[data-wplm-machine-field]').show();
+      licenseForm().find('[name="domains"]').closest('label').hide();
+    } else {
+      $('[data-wplm-machine-field]').hide();
+      licenseForm().find('[name="domains"]').closest('label').show();
+    }
+  }
+
+  $(document).on('change','#wplm-license-form [name="product_id"]', syncLicenseProductType);
+
   function closeLicenseModal(){ licenseModal().removeClass('is-open').attr('aria-hidden','true'); }
   $(document).on('click','[data-wplm-open-license-modal]',function(){ openLicenseModal(); });
   $(document).on('click','[data-wplm-edit-license]',function(){ openLicenseModal($(this).data()); });

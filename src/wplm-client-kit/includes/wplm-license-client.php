@@ -5,7 +5,7 @@
  * Client-side license activation/checking helper compatible with wp-plugin-market-manager.
  * Put this file inside the product plugin/theme you sell.
  *
- * @version 1.4.0
+ * @version 1.5.0
  */
 
 if (!defined('ABSPATH')) {
@@ -46,6 +46,8 @@ if (!class_exists('WPLM_Client_Kit_License')) {
                 'manager_plugin_file' => 'wplm-amolnovin-license-manager/wplm-amolnovin-license-manager.php',
                 'individual_page'   => false,
                 'lock_message'      => 'برای استفاده از افزونه، ابتدا لایسنس را فعال کنید.',
+                'activation'        => 'domain', // domain | machine
+                'machine_id'        => '',
             ];
 
             $this->config = wp_parse_args($config, $defaults);
@@ -147,6 +149,15 @@ if (!class_exists('WPLM_Client_Kit_License')) {
                                 <p class="description">کلید لایسنس دریافت‌شده پس از خرید را وارد کنید.</p>
                             </td>
                         </tr>
+                        <?php if ('machine' === $this->config['activation']) : ?>
+                            <tr>
+                                <th scope="row"><label for="wplm_machine_id">شناسه ماشین (machine_id)</label></th>
+                                <td>
+                                    <input id="wplm_machine_id" name="machine_id" type="text" class="regular-text" dir="ltr" autocomplete="off" value="<?php echo esc_attr($this->machine_id()); ?>" placeholder="4d75bfe14a964dcfb15b6741b2ef6bc2">
+                                    <p class="description">شناسه یکتا کامپیوتر فعلی. برای فعال‌سازی لایسنس روی این کامپیوتر باید در سامانه فروش ثبت شده باشد.</p>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                         <?php if ($license) : ?>
                             <tr>
                                 <th scope="row">حذف لایسنس محلی</th>
@@ -163,6 +174,9 @@ if (!class_exists('WPLM_Client_Kit_License')) {
                     <tbody>
                     <tr><td>Product Slug</td><td dir="ltr"><code><?php echo esc_html($this->config['product_slug']); ?></code></td></tr>
                     <tr><td>Domain</td><td dir="ltr"><code><?php echo esc_html($this->domain()); ?></code></td></tr>
+                    <?php if ('machine' === $this->config['activation']) : ?>
+                        <tr><td>Machine ID</td><td dir="ltr"><code><?php echo esc_html($this->machine_id()); ?></code></td></tr>
+                    <?php endif; ?>
                     <tr><td>API</td><td dir="ltr"><code><?php echo esc_html($this->config['api_base']); ?></code></td></tr>
                     <tr><td>آخرین بررسی</td><td><?php echo !empty($data['checked_at']) ? esc_html(mysql2date('Y/m/d H:i', $data['checked_at'])) : '—'; ?></td></tr>
                     <tr><td>کد وضعیت</td><td dir="ltr"><code><?php echo esc_html($data['code'] ?? '—'); ?></code></td></tr>
@@ -188,6 +202,9 @@ if (!class_exists('WPLM_Client_Kit_License')) {
 
             $license = isset($_POST['license_key']) ? sanitize_text_field(wp_unslash($_POST['license_key'])) : '';
             $this->set_license_key($license);
+            if ('machine' === $this->config['activation'] && !empty($_POST['machine_id'])) {
+                $this->set_machine_id(wp_unslash($_POST['machine_id']));
+            }
             $result = $this->activate($license);
 
             wp_safe_redirect($this->page_url(['activated' => !empty($result['success']) ? 1 : 0]));
@@ -250,7 +267,7 @@ if (!class_exists('WPLM_Client_Kit_License')) {
             $result = $this->request('/license/activate', [
                 'product_slug' => $this->config['product_slug'],
                 'license_key'  => $license,
-                'domain'       => $this->domain(),
+                'machine_id'   => $this->activation_id(),
             ]);
 
             $this->store_result($result);
@@ -270,7 +287,7 @@ if (!class_exists('WPLM_Client_Kit_License')) {
             $result = $this->request('/license/check', [
                 'product_slug' => $this->config['product_slug'],
                 'license_key'  => $license,
-                'domain'       => $this->domain(),
+                'machine_id'   => $this->activation_id(),
             ]);
 
             $this->store_result($result);
@@ -529,6 +546,40 @@ if (!class_exists('WPLM_Client_Kit_License')) {
             $this->clear_license();
         }
 
+        /**
+         * شناسه فعال‌سازی: machine_id اگر activation روی machine باشد،
+         * در غير این صورت دامنه رایج.
+         */
+        public function activation_id(): string
+        {
+            if ('machine' === $this->config['activation']) {
+                return $this->machine_id();
+            }
+            return $this->domain();
+        }
+
+        /**
+         * خواندن machine_id از option یا config.
+         */
+        public function machine_id(): string
+        {
+            if ('machine' !== $this->config['activation']) {
+                return '';
+            }
+            $value = get_option('wplm_machine_id_' . $this->config['product_slug'], $this->config['machine_id']);
+            return sanitize_text_field((string) $value);
+        }
+
+        public function set_machine_id(string $machine_id): void
+        {
+            if ('machine' !== $this->config['activation']) {
+                return;
+            }
+            $machine_id = strtolower(preg_replace('/[^a-f0-9]/i', '', $machine_id));
+            update_option('wplm_machine_id_' . $this->config['product_slug'], $machine_id);
+            $this->config['machine_id'] = $machine_id;
+        }
+
         private function normalize_api_url(string $url): string
         {
             $url = trim($url);
@@ -578,7 +629,7 @@ if (!class_exists('WPLM_Client_Kit_License')) {
 
         private function cache_key(): string
         {
-            return 'wplm_client_status_' . md5($this->config['product_slug'] . '|' . $this->domain() . '|' . $this->get_license_key());
+            return 'wplm_client_status_' . md5($this->config['product_slug'] . '|' . $this->activation_id() . '|' . $this->get_license_key());
         }
 
         public function get_license_key(): string
