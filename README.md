@@ -12,8 +12,9 @@ licence-manager-amolnovin/
 │   ├── wp-plugin-market-manager/       # افزونه اصلی: سامانه فروش و لایسنس افزونه و قالب (نسخه 1.3.0)
 │   ├── wplm-client-kit/                # کیت کلاینت: قفل لایسنس و آپدیتر افزونه مشتری (نسخه 1.4.0/1.1.0)
 │   └── wplm-amolnovin-license-manager/ # افزونه مستقل: لایسنس منیجر آمل نوین (نسخه 1.0.7)
-├── releases/                           # بسته‌های zip اصلی دانلود‌شده از درایو
-│   ├── wp-plugin-market-manager-20.zip
+├── releases/                           # بسته‌های zip اصلی
+│   ├── wp-plugin-market-manager-20.zip  # نسخه 1.2.3
+│   ├── wp-plugin-market-manager-21.zip  # نسخه 1.3.0 (پشتیبانی ویندوز و machine_id)
 │   ├── wplm-amolnovin-license-manager-7.zip
 │   └── wplm-client-kit-7.zip
 └── docs/
@@ -60,9 +61,13 @@ licence-manager-amolnovin/
 
 فایل‌ها از پوشه **licence manager** در گوگل درایو دانلود شدند:
 
-- `wp-plugin-market-manager (20).zip` — 106,549 byte
-- `wplm-amolnovin-license-manager (7).zip` — 12,807 byte
-- `wplm-client-kit (7).zip` — 21,628 byte
+- `wp-plugin-market-manager (20).zip` — 106,549 byte — نسخه 1.2.3
+- `wplm-amolnovin-license-manager (7).zip` — 12,807 byte — نسخه 1.0.7
+- `wplm-client-kit (7).zip` — 21,628 byte — نسخه 1.4.0/1.1.0
+
+## بسته‌هایใหม่
+
+- `releases/wp-plugin-market-manager-21.zip` — نسخه 1.3.0 (پشتیبانی برنامه ویندوز با machine_id)، ساخته‌شده از کدهای `src/wp-plugin-market-manager`
 
 ## تاریخچه نسخه‌ها
 
