@@ -68,6 +68,7 @@ licence-manager-amolnovin/
 ## بسته‌هایใหม่
 
 - `releases/wp-plugin-market-manager-21.zip` — نسخه 1.3.1 (پشتیبانی برنامه ویندوز با machine_id + رفع خطای parse در صفحه لایسنس‌ها)، ساخته‌شده از کدهای `src/wp-plugin-market-manager`
+- `releases/wplm-windows-kit-1.0.0.zip` — کیت لایسنس‌گذاری برای برنامه‌های ویندوز (C#/.NET)، شامل library `WPLM.LicenseKit` (activate/check/request/update)، مثال console و مستندات فارسی `docs/USAGE.md` و `docs/INTEGRATION.md`، ساخته‌شده از `src/wplm-windows-kit`
 
 ## تاریخچه نسخه‌ها
 
