@@ -1,7 +1,7 @@
 <?php
-use WPLM\\Repositories\\LicenseRepository;
-use WPLM\\Repositories\\ProductRepository;
-use WPLM\\Security;
+use WPLM\Repositories\LicenseRepository;
+use WPLM\Repositories\ProductRepository;
+use WPLM\Security;
 
 defined('ABSPATH') || exit;
 
