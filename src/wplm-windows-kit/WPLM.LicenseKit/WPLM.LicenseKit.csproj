@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>WPLM.LicenseKit</AssemblyName>
+    <RootNamespace>WPLM.LicenseKit</RootNamespace>
+    <Version>1.0.0</Version>
+    <Authors>Amol Novin</Authors>
+    <Company>Amol Novin</Company>
+    <Description>Windows license kit for wp-plugin-market-manager (amolnovin.ir)</Description>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>
