@@ -2,7 +2,7 @@
 Contributors: arena
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 
 سامانه اختصاصی فروش، معرفی، لایسنس آنلاین، بروزرسانی و پیامک برای افزونه‌ها و قالب‌های وردپرس.
@@ -143,3 +143,9 @@ client/wplm-amolnovin-license-manager.zip
 - خرید از فروشگاه: برای محصولات ویندوز در سبد خرید فیلد machine_id نمایش داده می‌شود و پس از پرداخت، لایسنس روی همان کامپیوتر صادر می‌شود.
 - سقف فعال‌سازی: تعداد مجاز machine_ids با فیلد تعداد فعال‌سازی (allowed_domains) کنترل می‌شود.
 - client kit: کلاس WPLM_Client_Kit_License با گزینه activation => 'machine' از machine_id پشتیبانی می‌کند و آپدیتر machine_id را در درخواست آپدیت ارسال می‌کند.
+
+== نسخه 1.3.1: رفع خطای parse در صفحه لایسنس‌ها ==
+
+- رفع خطای parse در admin/views/licenses.php: use statement با backslash
+  یکتا به‌جای backslash دوگانه (خطای «unexpected fully qualified name
+  \Repositories, expecting {»).

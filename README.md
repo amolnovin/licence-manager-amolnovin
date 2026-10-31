@@ -67,7 +67,7 @@ licence-manager-amolnovin/
 
 ## بسته‌هایใหม่
 
-- `releases/wp-plugin-market-manager-21.zip` — نسخه 1.3.0 (پشتیبانی برنامه ویندوز با machine_id)، ساخته‌شده از کدهای `src/wp-plugin-market-manager`
+- `releases/wp-plugin-market-manager-21.zip` — نسخه 1.3.1 (پشتیبانی برنامه ویندوز با machine_id + رفع خطای parse در صفحه لایسنس‌ها)، ساخته‌شده از کدهای `src/wp-plugin-market-manager`
 
 ## تاریخچه نسخه‌ها
 
