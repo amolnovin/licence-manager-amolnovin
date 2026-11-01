@@ -8,6 +8,8 @@
     $f.find('[name="version"]').val('1.0.0');
     $f.find('[name="currency"]').val('IRT');
     $f.find('[name="price"]').val('0');
+    $f.find('[name="sale_price"]').val('');
+    updateSalePreview();
     $f.find('[name="is_visible"]').prop('checked', true);
     $('[data-wplm-modal-title]').text('افزودن محصول جدید');
     $('[data-wplm-cover-preview]').empty();
@@ -19,10 +21,27 @@
       $f.find('[name="is_visible"]').prop('checked', String(editData.is_visible) === '1');
       setProductEditor(editData.description || '');
       updatePreview(editData.cover_url || '');
+      updateSalePreview();
     }
     $m.addClass('is-open').attr('aria-hidden','false');
   }
   function closeModal(){ productModal().removeClass('is-open').attr('aria-hidden','true'); }
+  // پیش‌نمایش قیمت با تخفیف در مودال محصول
+  function updateSalePreview(){
+    var $box = $('[data-wplm-sale-preview]');
+    if(!$box.length){ return; }
+    var price = parseFloat(form().find('[name="price"]').val() || '0') || 0;
+    var sale = parseFloat(form().find('[name="sale_price"]').val() || '0') || 0;
+    if(sale > 0 && sale < price){
+      var percent = Math.max(1, Math.round(((price - sale) / price) * 100));
+      $box.addClass('has-sale').text('قیمت نهایی ' + sale.toLocaleString('fa-IR') + ' — تخفیف ' + percent.toLocaleString('fa-IR') + '٪');
+    } else if(sale > 0){
+      $box.removeClass('has-sale').text('قیمت تخفیف باید کمتر از قیمت اصلی باشد');
+    } else {
+      $box.removeClass('has-sale').text('بدون تخفیف');
+    }
+  }
+  $(document).on('input','#wplm-product-form [name="price"], #wplm-product-form [name="sale_price"]', updateSalePreview);
   function setProductEditor(content){
     content = content || '';
     if(window.tinymce && tinymce.get('wplm_product_description_editor')){
@@ -118,4 +137,33 @@
   $(document).on('click','[data-wplm-open-license-modal]',function(){ openLicenseModal(); });
   $(document).on('click','[data-wplm-edit-license]',function(){ openLicenseModal($(this).data()); });
   $(document).on('click','[data-wplm-close-license-modal]', closeLicenseModal);
+
+  // کپی کلید لایسنس در ستون عملیات
+  $(document).on('click','[data-copy-license]', function(e){
+    e.preventDefault();
+    var $btn = $(this);
+    var text = String($btn.attr('data-copy-license') || '');
+    if(!text){ return; }
+    function done(){
+      $btn.addClass('is-copied');
+      $btn.find('.dashicons').removeClass('dashicons-clipboard').addClass('dashicons-yes');
+      setTimeout(function(){
+        $btn.removeClass('is-copied');
+        $btn.find('.dashicons').removeClass('dashicons-yes').addClass('dashicons-clipboard');
+      }, 1600);
+    }
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  });
+
+  function fallbackCopy(text, done){
+    var $tmp = $('<textarea>').val(text).attr('readonly','readonly').css({position:'fixed',top:'-1000px',opacity:0});
+    $('body').append($tmp);
+    $tmp[0].select();
+    try { document.execCommand('copy'); done(); } catch(err) {}
+    $tmp.remove();
+  }
 })(jQuery);

@@ -61,9 +61,9 @@ PackageService::ensure_secure_dir();
                         <td><?php echo esc_html(mysql2date('Y/m/d H:i', $version->created_at)); ?></td>
                         <td class="wplm-actions">
                             <?php if (!$version->is_current) : ?>
-                                <a class="button" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_make_current_version','id'=>(int)$version->id], admin_url('admin-post.php')), 'wplm_version_action')); ?>">انتخاب به عنوان فعلی</a>
+                                <a class="button wplm-icon-btn is-success" title="انتخاب به عنوان نسخه فعلی" aria-label="انتخاب به عنوان نسخه فعلی" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_make_current_version','id'=>(int)$version->id], admin_url('admin-post.php')), 'wplm_version_action')); ?>"><span class="dashicons dashicons-star-filled"></span></a>
                             <?php endif; ?>
-                            <a class="button wplm-danger" onclick="return confirm('نسخه و فایل ZIP حذف شود؟')" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_delete_version','id'=>(int)$version->id], admin_url('admin-post.php')), 'wplm_version_action')); ?>">حذف</a>
+                            <a class="button wplm-icon-btn is-danger" title="حذف نسخه و فایل ZIP" aria-label="حذف نسخه و فایل ZIP" onclick="return confirm('نسخه و فایل ZIP حذف شود؟')" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_delete_version','id'=>(int)$version->id], admin_url('admin-post.php')), 'wplm_version_action')); ?>"><span class="dashicons dashicons-trash"></span></a>
                         </td>
                     </tr>
                     <?php if (!empty($version->changelog)) : ?>

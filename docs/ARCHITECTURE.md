@@ -6,9 +6,21 @@
 
 ## 1. wp-plugin-market-manager — سامانه فروش و لایسنس افزونه و قالب
 
-نسخه: **1.3.0** | WordPress ≥ 6.2 | PHP ≥ 7.4 | GPLv2
+نسخه: **1.4.0** | WordPress ≥ 6.2 | PHP ≥ 7.4 | GPLv2
 
 افزونه اصلی که روی سایت فروش (`amolnovin.ir`) نصب می‌شود و در الویتhapی‌های زیر کاملاً مستقل عمل می‌کند: فروش، معرفی، لایسنس آنلاین، بروزرسانی و پیامک برای افزونه‌ها و قالب‌های وردپرس.
+
+### قیمت با تخفیف
+
+- ستون `sale_price` در جدول `wp_wplm_products` (بعد از `price`).
+- `ProductRepository::has_sale()` / `effective_price()` / `discount_percent()` منطق مشترک تخفیف را نگه می‌دارند.
+- `PurchaseService::calculate_cart()` و `DiscountRepository::validate_for_product()` مبلغ پایه را از `effective_price()` می‌گیرند، پس مبلغ پرداخت و پایه کد تخفیف هر دو قیمت با تخفیف است.
+- نمایش: `Shortcodes::sale_ribbon()` (لیبل گرافیکی درصد) و `Shortcodes::price_html()` (قیمت خط‌خورده + قیمت نهایی).
+
+### افزونه‌های پرکاربرد
+
+- تنظیمات `featured_product_ids` (حداکثر ۴ شناسه)، `popular_title`، `popular_subtitle` و `popular_show_in_store` در option `wplm_settings`.
+- شورتکد `[wplm_popular]` با alias `[wplm_featured_products]`؛ در صفحه `[wplm_store]` به‌صورت خودکار (اگر گزینه روشن باشد) بالای گرید محصولات نمایش داده می‌شود.
 
 ### اصول طراحی
 
@@ -35,10 +47,10 @@ wp-plugin-market-manager/
 │   ├── sales.php                     # فهرستی سفارشات + آمار
 │   ├── discounts.php                 # کدهای تخفیف و کمپین
 │   ├── requests.php                  # درخواست‌های لایسنس отклики
-│   ├── licenses.php                  # مدیریت لایسنس (create/edit/extend/remove)
+│   ├── licenses.php                  # مدیریت لایسنس (create/edit/extend/remove/copy key)
 │   ├── updates.php                   # مدیریت نسخه‌ها و آپلود ZIP
 │   ├── sms.php                       # تنظیمات پیامک IPPanel
-│   ├── settings.php                  # تنظیمات عمومی (درگاه، قیمت، دامنه)
+│   ├── settings.php                  # تنظیمات عمومی (درگاه، قیمت، دامنه، افزونه‌های پرکاربرد)
 │   ├── header.php / footer.php       # header و footer پنل مدیریت
 ├── client/
 │   ├── wplm-plugin-updater.php       # آپدیتر قدیمی (class WPLM_Plugin_Updater)
@@ -51,7 +63,7 @@ wp-plugin-market-manager/
 │   ├── Options.php                   # تنظیمات (wplm_settings)
 │   ├── Security.php                  # can(), require_cap(), nonce, rate_limit, key gen
 │   ├── Assets.php                    # admin() و public()
-│   ├── Shortcodes.php                # [wplm_store] [wplm_account] [wplm_payment_result] ...
+│   ├── Shortcodes.php                # [wplm_store] [wplm_popular] [wplm_account] [wplm_payment_result] ...
 │   ├── Admin/
 │   │   ├── Menu.php                  # منوهای admin + view loader
 │   │   └── Actions.php               # handlers admin-post و ajax

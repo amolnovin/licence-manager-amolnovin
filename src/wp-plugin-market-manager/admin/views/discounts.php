@@ -62,8 +62,8 @@ $edit = $edit_id ? $repo->find($edit_id) : null;
                         <td><?php echo esc_html((int)$item->used_count); ?> / <?php echo !empty($item->usage_limit) ? esc_html((int)$item->usage_limit) : '∞'; ?></td>
                         <td><span class="wplm-status <?php echo esc_attr($item->status); ?>"><?php echo 'active' === $item->status ? 'فعال' : 'غیرفعال'; ?></span></td>
                         <td class="wplm-actions">
-                            <a class="button" href="<?php echo esc_url(add_query_arg(['page'=>'wplm-discounts','edit'=>(int)$item->id], admin_url('admin.php'))); ?>">ویرایش</a>
-                            <a class="button wplm-danger" onclick="return confirm('حذف شود؟')" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_delete_discount','id'=>(int)$item->id], admin_url('admin-post.php')), 'wplm_delete_discount')); ?>">حذف</a>
+                            <a class="button wplm-icon-btn" title="ویرایش کد تخفیف" aria-label="ویرایش کد تخفیف" href="<?php echo esc_url(add_query_arg(['page'=>'wplm-discounts','edit'=>(int)$item->id], admin_url('admin.php'))); ?>"><span class="dashicons dashicons-edit"></span></a>
+                            <a class="button wplm-icon-btn is-danger" title="حذف کد تخفیف" aria-label="حذف کد تخفیف" onclick="return confirm('حذف شود؟')" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_delete_discount','id'=>(int)$item->id], admin_url('admin-post.php')), 'wplm_delete_discount')); ?>"><span class="dashicons dashicons-trash"></span></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

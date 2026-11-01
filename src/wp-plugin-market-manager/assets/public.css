@@ -10,3 +10,109 @@
 .wplm-account-layout{display:grid;grid-template-columns:280px 1fr;gap:22px;align-items:start}.wplm-account-sidebar{background:#fff;border:1px solid #e5e7eb;border-radius:24px;padding:18px;box-shadow:0 14px 38px rgba(15,23,42,.07);position:sticky;top:24px}.wplm-account-user{text-align:center;border-bottom:1px solid #e5e7eb;padding-bottom:16px;margin-bottom:14px}.wplm-account-avatar{width:64px;height:64px;border-radius:22px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-size:28px;font-weight:900}.wplm-account-user strong{display:block;color:#111827}.wplm-account-user small{color:#64748b}.wplm-account-nav{display:grid;gap:8px}.wplm-account-nav a{display:flex;align-items:center;justify-content:space-between;text-decoration:none!important;color:#334155;background:#f8fafc;border:1px solid #e5e7eb;border-radius:15px;padding:12px 14px;font-weight:800}.wplm-account-nav a.active,.wplm-account-nav a:hover{background:#4f46e5;color:#fff;border-color:#4f46e5}.wplm-account-nav a.logout{background:#fef2f2;color:#991b1b;border-color:#fecaca}.wplm-account-content{min-width:0}.wplm-account-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.wplm-account-stats div,.wplm-account-section{background:#fff;border:1px solid #e5e7eb;border-radius:24px;padding:20px;box-shadow:0 14px 38px rgba(15,23,42,.07)}.wplm-account-stats span{display:block;color:#64748b}.wplm-account-stats strong{display:block;font-size:30px;color:#111827;margin-top:8px}.wplm-account-section h3{margin-top:0}.wplm-account-table-wrap{overflow:auto}.wplm-account-table{width:100%;border-collapse:collapse}.wplm-account-table th,.wplm-account-table td{padding:12px;border-bottom:1px solid #e5e7eb;text-align:right}.wplm-purchase-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.wplm-purchase-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:20px;padding:14px;display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center}.wplm-purchase-card img{width:84px;height:84px;border-radius:18px;object-fit:cover}.wplm-purchase-card h4{margin:8px 0 4px;font-size:18px}.wplm-purchase-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}.wplm-purchase-modal{display:none;position:fixed;inset:0;z-index:99999}.wplm-purchase-modal.is-open{display:block}.wplm-purchase-modal-bg{position:absolute;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px)}.wplm-purchase-modal-box{position:relative;background:#fff;border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.28);width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 48px);overflow:auto;margin:24px auto;padding:24px;direction:rtl}.wplm-purchase-close{position:absolute;top:14px;left:14px;border:0;background:#fee2e2;color:#991b1b;border-radius:50%;width:34px;height:34px;font-size:22px;cursor:pointer}.wplm-alert{border-radius:16px;padding:12px 14px;margin-bottom:14px;font-weight:800}.wplm-alert.success{background:#dcfce7;color:#166534}.wplm-alert.error{background:#fee2e2;color:#991b1b}.wplm-card-footer{justify-content:flex-end}.wplm-home-product-foot{justify-content:flex-end}@media(max-width:960px){.wplm-account-layout{grid-template-columns:1fr}.wplm-account-sidebar{position:static}.wplm-account-nav{grid-template-columns:repeat(2,1fr)}.wplm-purchase-grid{grid-template-columns:1fr}}@media(max-width:640px){.wplm-account-stats{grid-template-columns:1fr}.wplm-account-nav{grid-template-columns:1fr}.wplm-purchase-card{grid-template-columns:1fr}.wplm-purchase-card img{width:100%;height:180px}.wplm-account-table thead{display:none}.wplm-account-table,.wplm-account-table tbody,.wplm-account-table tr,.wplm-account-table td{display:block;width:100%}.wplm-account-table tr{border:1px solid #e5e7eb;border-radius:16px;margin:10px 0;padding:8px}.wplm-account-table td{border:0}}
 /* WPLM front navigation */
 .wplm-front-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;background:rgba(255,255,255,.94);border:1px solid #e5e7eb;border-radius:22px;padding:10px 12px;margin:14px 0 22px;box-shadow:0 14px 38px rgba(15,23,42,.08);backdrop-filter:blur(10px);position:relative;z-index:5}.wplm-front-nav-main{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.wplm-front-nav-logo{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff!important;text-decoration:none!important;border-radius:16px;padding:10px 14px;font-weight:900;box-shadow:0 10px 24px rgba(79,70,229,.18)}.wplm-front-nav-link{display:inline-flex;align-items:center;color:#334155!important;text-decoration:none!important;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:9px 12px;font-weight:800;font-size:13px;transition:.2s}.wplm-front-nav-link:hover{background:#eef2ff;color:#4f46e5!important;border-color:#c7d2fe}.wplm-front-nav-actions{display:flex;align-items:center;gap:8px}.wplm-front-icon{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:15px;background:#f8fafc;border:1px solid #e5e7eb;color:#4f46e5!important;text-decoration:none!important;transition:.2s}.wplm-front-icon:hover{background:#4f46e5;color:#fff!important;border-color:#4f46e5;transform:translateY(-2px)}@media(max-width:760px){.wplm-front-nav{display:block;padding:12px}.wplm-front-nav-main{overflow-x:auto;flex-wrap:nowrap;padding-bottom:8px;scrollbar-width:none}.wplm-front-nav-main::-webkit-scrollbar{display:none}.wplm-front-nav-link,.wplm-front-nav-logo{white-space:nowrap}.wplm-front-nav-actions{justify-content:flex-end;margin-top:8px}}
+
+/* ---------------------------------------------------------------
+   فروشگاه: اصلاح عرض گرید محصولات (wplm-public-grid)
+   -----------------------------------------------------------------
+   تشخیص مشکل:
+   کلاس .wplm-public-grid در همین فایل وجود دارد و
+   `display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px`
+   هم درست تعریف شده است؛ پس مشکل از خود افزونه نیست، بلکه از قالب سایت
+   (آمل نوین) می‌آید: قالب روی عناصر محتوا عرض را به اندازهٔ محتوا محدود
+   می‌کند (fit-content / max-width / flex) یا ستون‌های گرید را با
+   specificity بالاتر بازنویسی می‌کند. نتیجه این است که کل بلوک فروشگاه
+   فقط به اندازهٔ یک کارت (~۴۰۰px) در سمت راست رندر می‌شود و بقیهٔ صفحه
+   خالی می‌ماند.
+   راه‌حل: تثبیت عرض کامل + تعریف صریح ستون‌ها در هر بریک‌پوینت با
+   specificity بالاتر و !important (فقط روی کلاس اختصاصی خود افزونه)
+   تا هیچ قاعدهٔ قالب نتواند آن را بشکند. تعداد ستون‌ها همان ۳/۲/۱
+   قبلی می‌ماند و نیازی به کامنت کردن grid-template-columns نیست.
+   --------------------------------------------------------------- */
+.wplm-store .wplm-public-grid,
+.wplm-store.wplm-public-grid,
+.wplm-public-grid.wplm-public-grid{
+    display:grid!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    float:none!important;
+    clear:both;
+    box-sizing:border-box;
+    grid-auto-flow:row!important;
+    grid-auto-columns:minmax(0,1fr)!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    align-items:start;
+    gap:18px;
+    direction:rtl;
+}
+.wplm-store .wplm-public-grid > .wplm-public-card,
+.wplm-public-grid.wplm-public-grid > .wplm-public-card{
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    float:none!important;
+    margin:0;
+    box-sizing:border-box;
+}
+.wplm-store .wplm-public-card > img{
+    width:100%!important;
+    max-width:100%;
+}
+
+/* عرض کامل بلوک‌های اصلی فروشگاه (جلوگیری از fit-content شدن با قالب) */
+.wplm-store{display:block;width:100%!important;max-width:none!important;min-width:0!important}
+.wplm-store .wplm-store-hero,
+.wplm-store .wplm-product-hero,
+.wplm-store .wplm-front-nav,
+.wplm-store .wplm-filters{width:100%!important;max-width:none!important;box-sizing:border-box}
+.wplm-store .wplm-single-grid{width:100%!important;grid-template-columns:minmax(0,1fr) 360px}
+@media(max-width:900px){.wplm-store .wplm-single-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:1000px){
+    .wplm-store .wplm-public-grid,
+    .wplm-public-grid.wplm-public-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:640px){
+    .wplm-store .wplm-public-grid,
+    .wplm-public-grid.wplm-public-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+
+/* قیمت با تخفیف در کارت‌ها و صفحه محصول */
+.wplm-card-price{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wplm-price-old{text-decoration:line-through;color:#9ca3af;font-size:15px;font-weight:700}
+.wplm-price-final{font-size:22px;color:#b91c1c;font-weight:900}
+.wplm-price-final span{font-size:12px;color:#6b7280;font-weight:700}
+.wplm-sale-ribbon{
+    position:absolute;top:14px;right:14px;z-index:3;
+    display:inline-flex;align-items:center;gap:5px;
+    background:linear-gradient(135deg,#ef4444,#f97316);
+    color:#fff;font-size:13px;font-weight:900;
+    padding:6px 11px;border-radius:999px;
+    box-shadow:0 12px 26px rgba(239,68,68,.38);
+    transform:rotate(-2deg);
+}
+.wplm-sale-ribbon::before{content:"٪";font-size:11px;opacity:.9}
+.wplm-sale-ribbon b{font-size:15px;line-height:1}
+.wplm-sale-chip{display:inline-flex;align-items:center;gap:5px;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800}
+.wplm-public-card{position:relative}
+.wplm-home-product-card{position:relative}
+.wplm-home-product-cover{position:relative}
+
+/* بخش «افزونه‌های پرکاربرد» */
+.wplm-popular-section{margin:26px 0 30px;padding:0}
+.wplm-popular-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:16px;flex-wrap:wrap}
+.wplm-popular-head h2{margin:8px 0 6px;font-size:28px;color:#111827}
+.wplm-popular-head p{margin:0;color:#6b7280;line-height:1.9;max-width:720px}
+.wplm-popular-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.wplm-popular-card{
+    position:relative;display:flex;flex-direction:column;gap:12px;
+    background:#fff;border:1px solid #e5e7eb;border-radius:22px;padding:18px;
+    box-shadow:0 14px 38px rgba(15,23,42,.07);transition:.2s transform,.2s box-shadow;
+}
+.wplm-popular-card:hover{transform:translateY(-4px);box-shadow:0 22px 50px rgba(15,23,42,.13)}
+.wplm-popular-card .wplm-popular-cover{height:120px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#4f46e5,#06b6d4)}
+.wplm-popular-card .wplm-popular-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.wplm-popular-card .wplm-popular-placeholder{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#fff;font-size:34px;font-weight:900}
+.wplm-popular-card h3{margin:0;font-size:18px;color:#111827;line-height:1.7}
+.wplm-popular-card h3 a{color:#111827!important;text-decoration:none!important}
+.wplm-popular-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;border-top:1px solid #e5e7eb;padding-top:12px}
+@media(max-width:640px){.wplm-popular-grid{grid-template-columns:1fr}.wplm-popular-head h2{font-size:22px}}

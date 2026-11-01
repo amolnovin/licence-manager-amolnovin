@@ -106,7 +106,7 @@ final class PurchaseService
         ]);
 
         foreach ($products as $product) {
-            $item_amounts = $calculated['items'][$product->id] ?? ['price' => $product->price, 'original_amount' => $product->price, 'discount_amount' => 0, 'total_amount' => $product->price];
+            $item_amounts = $calculated['items'][$product->id] ?? ['price' => ProductRepository::effective_price($product), 'original_amount' => ProductRepository::effective_price($product), 'discount_amount' => 0, 'total_amount' => ProductRepository::effective_price($product)];
             $order_repo->add_item((int) $order->id, $product, $item_amounts);
         }
 
@@ -269,7 +269,8 @@ final class PurchaseService
     {
         $original = 0.0;
         foreach ($products as $product) {
-            $original += (float) $product->price;
+            // اگر محصول قیمت با تخفیف دارد، همان مبلغ پایه فروش است.
+            $original += ProductRepository::effective_price($product);
         }
         $discount_total = 0.0;
         $discount_id = 0;
@@ -277,7 +278,8 @@ final class PurchaseService
         $payload = null;
         $items = [];
         foreach ($products as $product) {
-            $items[$product->id] = ['price' => (float) $product->price, 'original_amount' => (float) $product->price, 'discount_amount' => 0, 'total_amount' => (float) $product->price];
+            $base_price = ProductRepository::effective_price($product);
+            $items[$product->id] = ['price' => $base_price, 'original_amount' => $base_price, 'discount_amount' => 0, 'total_amount' => $base_price];
         }
         if ($discount_code) {
             $repo = new DiscountRepository();
@@ -289,7 +291,7 @@ final class PurchaseService
                     $amount = (float) $result['discount_amount'];
                     $discount_total += $amount;
                     $items[$product->id]['discount_amount'] = $amount;
-                    $items[$product->id]['total_amount'] = max(0, (float) $product->price - $amount);
+                    $items[$product->id]['total_amount'] = max(0, $items[$product->id]['price'] - $amount);
                     $payload = ['id' => $discount_id, 'code' => $applied_code, 'amount' => $discount_total, 'type' => $result['discount']->discount_type];
                 }
             }

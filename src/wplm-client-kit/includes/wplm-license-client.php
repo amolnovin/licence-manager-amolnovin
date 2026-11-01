@@ -5,7 +5,7 @@
  * Client-side license activation/checking helper compatible with wp-plugin-market-manager.
  * Put this file inside the product plugin/theme you sell.
  *
- * @version 1.5.0
+ * @version 1.5.1
  */
 
 if (!defined('ABSPATH')) {
@@ -267,7 +267,8 @@ if (!class_exists('WPLM_Client_Kit_License')) {
             $result = $this->request('/license/activate', [
                 'product_slug' => $this->config['product_slug'],
                 'license_key'  => $license,
-                'machine_id'   => $this->activation_id(),
+                'domain'       => 'domain' === $this->config['activation'] ? $this->domain() : '',
+                'machine_id'   => 'machine' === $this->config['activation'] ? $this->machine_id() : '',
             ]);
 
             $this->store_result($result);
@@ -287,7 +288,8 @@ if (!class_exists('WPLM_Client_Kit_License')) {
             $result = $this->request('/license/check', [
                 'product_slug' => $this->config['product_slug'],
                 'license_key'  => $license,
-                'machine_id'   => $this->activation_id(),
+                'domain'       => 'domain' === $this->config['activation'] ? $this->domain() : '',
+                'machine_id'   => 'machine' === $this->config['activation'] ? $this->machine_id() : '',
             ]);
 
             $this->store_result($result);

@@ -106,7 +106,8 @@ final class DiscountRepository
             return ['valid' => false, 'code' => 'category_mismatch', 'message' => 'این کد تخفیف برای دسته‌بندی این محصول قابل استفاده نیست.'];
         }
 
-        $discount_amount = $this->calculate_amount($discount, (float) $product->price);
+        $base_price = ProductRepository::effective_price($product);
+        $discount_amount = $this->calculate_amount($discount, $base_price);
         if ($discount_amount <= 0) {
             return ['valid' => false, 'code' => 'zero', 'message' => 'مقدار تخفیف قابل اعمال نیست.'];
         }
@@ -115,7 +116,7 @@ final class DiscountRepository
             'valid' => true,
             'discount' => $discount,
             'discount_amount' => $discount_amount,
-            'final_amount' => max(0, (float) $product->price - $discount_amount),
+            'final_amount' => max(0, $base_price - $discount_amount),
         ];
     }
 

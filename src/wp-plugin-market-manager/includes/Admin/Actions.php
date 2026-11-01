@@ -57,6 +57,7 @@ final class Actions
             'description' => isset($source['description']) ? wp_kses_post(wp_unslash($source['description'])) : '',
             'version' => isset($source['version']) ? sanitize_text_field(wp_unslash($source['version'])) : '1.0.0',
             'price' => isset($source['price']) ? (float) $source['price'] : 0,
+            'sale_price' => isset($source['sale_price']) ? (float) $source['sale_price'] : 0,
             'currency' => isset($source['currency']) ? sanitize_text_field(wp_unslash($source['currency'])) : 'IRT',
             'status' => isset($source['status']) && in_array($source['status'], ['active', 'draft'], true) ? sanitize_key($source['status']) : 'draft',
             'license_mode' => isset($source['license_mode']) && 'none' === $source['license_mode'] ? 'none' : 'required',
@@ -174,6 +175,10 @@ final class Actions
             'zibal_test_mode' => isset($_POST['zibal_test_mode']) ? '1' : '0',
             'zarinpal_merchant' => isset($_POST['zarinpal_merchant']) ? sanitize_text_field(wp_unslash($_POST['zarinpal_merchant'])) : '',
             'zarinpal_sandbox' => isset($_POST['zarinpal_sandbox']) ? '1' : '0',
+            'featured_product_ids' => self::featured_product_ids_from_request($_POST),
+            'popular_title' => isset($_POST['popular_title']) ? sanitize_text_field(wp_unslash($_POST['popular_title'])) : 'افزونه‌های پرکاربرد',
+            'popular_subtitle' => isset($_POST['popular_subtitle']) ? sanitize_textarea_field(wp_unslash($_POST['popular_subtitle'])) : '',
+            'popular_show_in_store' => isset($_POST['popular_show_in_store']) ? '1' : '0',
             'store_page_id' => isset($_POST['store_page_id']) ? absint($_POST['store_page_id']) : 0,
             'account_page_id' => isset($_POST['account_page_id']) ? absint($_POST['account_page_id']) : 0,
             'payment_result_page_id' => isset($_POST['payment_result_page_id']) ? absint($_POST['payment_result_page_id']) : 0,
@@ -188,6 +193,16 @@ final class Actions
 
         Options::update($settings);
         Security::redirect('wplm-settings', ['saved' => 1]);
+    }
+
+    /**
+     * خواندن ۴ محصول انتخاب‌شده «افزونه‌های پرکاربرد» از فرم تنظیمات.
+     */
+    private static function featured_product_ids_from_request(array $source): array
+    {
+        $ids = isset($source['featured_product_ids']) && is_array($source['featured_product_ids']) ? $source['featured_product_ids'] : [];
+        $ids = array_map('absint', $ids);
+        return array_slice(array_values(array_unique(array_filter($ids))), 0, 4);
     }
 
     public static function save_license(): void

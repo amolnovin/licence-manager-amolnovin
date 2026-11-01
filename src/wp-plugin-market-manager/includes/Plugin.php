@@ -83,6 +83,8 @@ final class Plugin
         add_shortcode('wplm_latest_carousel', [Shortcodes::class, 'latest_carousel']);
         add_shortcode('wplm_product_carousel', [Shortcodes::class, 'latest_carousel']);
         add_shortcode('wplm_store', [Shortcodes::class, 'store']);
+        add_shortcode('wplm_popular', [Shortcodes::class, 'popular']);
+        add_shortcode('wplm_featured_products', [Shortcodes::class, 'popular']);
         add_shortcode('wplm_account', [Shortcodes::class, 'account']);
         add_shortcode('wplm_payment_result', [Shortcodes::class, 'payment_result']);
     }
