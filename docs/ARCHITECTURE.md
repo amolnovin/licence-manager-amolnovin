@@ -6,7 +6,7 @@
 
 ## 1. wp-plugin-market-manager — سامانه فروش و لایسنس افزونه و قالب
 
-نسخه: **1.4.0** | WordPress ≥ 6.2 | PHP ≥ 7.4 | GPLv2
+نسخه: **1.5.0** | WordPress ≥ 6.2 | PHP ≥ 7.4 | GPLv2
 
 افزونه اصلی که روی سایت فروش (`amolnovin.ir`) نصب می‌شود و در الویتhapی‌های زیر کاملاً مستقل عمل می‌کند: فروش، معرفی، لایسنس آنلاین، بروزرسانی و پیامک برای افزونه‌ها و قالب‌های وردپرس.
 
@@ -21,6 +21,13 @@
 
 - تنظیمات `featured_product_ids` (حداکثر ۴ شناسه)، `popular_title`، `popular_subtitle` و `popular_show_in_store` در option `wplm_settings`.
 - شورتکد `[wplm_popular]` با alias `[wplm_featured_products]`؛ در صفحه `[wplm_store]` به‌صورت خودکار (اگر گزینه روشن باشد) بالای گرید محصولات نمایش داده می‌شود.
+
+### فونت و هم‌شکلی با قالب
+
+- `includes/Support/ThemeFont.php` تنها مرجع فونت در افزونه است: استک فونت قالب را از فیلتر `wplm_theme_font_family`، سپس `theme.json` و سپس متغیر `--font` در `style.css` می‌خواند.
+- `Assets::admin()` خروجی `ThemeFont::admin_css()` را با `wp_add_inline_style` روی `wplm-admin` می‌گذارد (شامل `@font-face` فونت قالب اگر فایل `.woff2`/`.woff` در پوشه قالب باشد).
+- `Assets::public()` متغیر `--wplm-font` را روی `.wplm-store` ست می‌کند؛ CSS فروشگاه با `font-family:var(--wplm-font,var(--font,inherit))` کار می‌کند، بنابراین دیگر هیچ فونت ثابتی در `public.css` وجود ندارد.
+- کنترل‌های فرم داخل افزونه `font-family:inherit` دارند؛ `dashicons` و متن‌های کد/کلید لایسنس فونت اختصاصی خود را حفظ می‌کنند.
 
 ### اصول طراحی
 

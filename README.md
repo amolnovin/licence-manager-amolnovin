@@ -9,7 +9,7 @@
 ```text
 licence-manager-amolnovin/
 ├── src/
-│   ├── wp-plugin-market-manager/       # افزونه اصلی: سامانه فروش و لایسنس افزونه و قالب (نسخه 1.4.0)
+│   ├── wp-plugin-market-manager/       # افزونه اصلی: سامانه فروش و لایسنس افزونه و قالب (نسخه 1.5.0)
 │   ├── wplm-client-kit/                # کیت کلاینت: قفل لایسنس و آپدیتر افزونه مشتری (نسخه 1.5.1/1.2.0)
 │   └── wplm-amolnovin-license-manager/ # افزونه مستقل: لایسنس منیجر آمل نوین (نسخه 1.0.7)
 ├── releases/                           # بسته‌های zip اصلی
@@ -27,7 +27,7 @@ licence-manager-amolnovin/
 
 | جز | نقش | نصب در | نسخه |
 |---|---|---|---|
-| `wp-plugin-market-manager` | سایت فروش اصلی (فروش، پرداخت زیبال/زرین‌پال، صدور لایسنس، آپلود نسخه، کد تخفیف، پیامک، قیمت با تخفیف) | **سرویس‌دهنده** (`amolnovin.ir`) | 1.4.0 |
+| `wp-plugin-market-manager` | سایت فروش اصلی (فروش، پرداخت زیبال/زرین‌پال، صدور لایسنس، آپلود نسخه، کد تخفیف، پیامک، قیمت با تخفیف) | **سرویس‌دهنده** (`amolnovin.ir`) | 1.5.0 |
 | `wplm-amolnovin-license-manager` | پنل مرکزی ثبت/بررسی/حذف لایسنس همه افزونه‌های متصل + بررسی ارتباط با سرور | **سرویس‌دهنده** (یا مشتری) | 1.0.7 |
 | `wplm-client-kit` | قفل لایسنس، فرم فعال‌سازی و آپدیتر استاندارد برای افزونه‌های قابل فروش | **هر افزونه مشتری** | 1.5.1 / 1.2.0 |
 
@@ -62,6 +62,18 @@ licence-manager-amolnovin/
 - کیت کلاینت در حالت فعال‌سازی دامنه، دیگر دامنه را در فیلد `machine_id` نمی‌فرستد؛ فعال‌سازی لایسنس‌های دامنه‌ای درست کار می‌کند.
 - عرض گرید محصولات (`wplm-public-grid`) در برابر بازنویسی استایل قالب تثبیت شد.
 
+## هم‌فونت با قالب (نسخه 1.5.0)
+
+- افزونه دیگر **هیچ فونت ثابتی** (پیش‌تر `Tahoma`) تحمیل نمی‌کند؛ کل فروشگاه و شورت‌کدها فونت قالب فعال را به ارث می‌برند.
+- ترتیب تشخیص فونت: فیلتر `wplm_theme_font_family` → `theme.json` (`settings.typography.fontFamilies`) → متغیر CSS ‏`--font` در `style.css` قالب → در نهایت `inherit`.
+- صفحات پیشخوان افزونه هم همان فونت را می‌گیرند: اگر فایل فونت (`.woff2`/`.woff`) داخل پوشه قالب باشد (مثل `resources/fonts`، `assets/fonts` یا خروجی Vite)، در پیشخوان با `@font-face` ثبت می‌شود.
+- سازگار با قالب **آمل نوین** (`wordpress-theme` در مخزن `amolnovin/amolnovin-theme`) که فونت `Vazirmatn` را با متغیر `--font` و `theme.json` ارائه می‌کند؛ روی آن قالب هیچ کار اضافه‌ای لازم نیست.
+- مدیر سایت می‌تواند با فیلتر زیر فونت دیگری را اجبار کند:
+
+```php
+add_filter('wplm_theme_font_family', fn () => '"IRANSans", Tahoma, sans-serif');
+```
+
 ## فرآیند کلی
 
 1. فروشنده محصول را در `wp-plugin-market-manager` ثبت می‌کند (افزونه، قالب یا برنامه ویندوز).
@@ -84,11 +96,20 @@ licence-manager-amolnovin/
 ## بسته‌هایใหม่
 
 - `releases/wp-plugin-market-manager-21.zip` — نسخه 1.3.1 (پشتیبانی برنامه ویندوز با machine_id + رفع خطای parse در صفحه لایسنس‌ها)، ساخته‌شده از کدهای `src/wp-plugin-market-manager`
+- `releases/wp-plugin-market-manager-23.zip` — نسخه 1.5.0 (هم‌فونت با قالب: حذف Tahoma و استفاده از فونت قالب در فروشگاه و پیشخوان)
 - `releases/wp-plugin-market-manager-22.zip` — نسخه 1.4.0 (قیمت با تخفیف، افزونه‌های پرکاربرد، آیکن‌های عملیات، کپی لایسنس + رفع باگ‌های بحرانی و اصلاح عرض گرید)
+- `releases/wplm-amolnovin-license-manager-8.zip` — نسخه 1.0.8 (هم‌فونت با قالب در صفحه مدیریت)
 - `releases/wplm-client-kit-8.zip` — کیت کلاینت 1.5.1 / آپدیتر 1.2.0 (رفع ارسال دامنه در فعال‌سازی)
 - `releases/wplm-windows-kit-1.0.0.zip` — کیت لایسنس‌گذاری برای برنامه‌های ویندوز (C#/.NET)، شامل library `WPLM.LicenseKit` (activate/check/request/update)، مثال console و مستندات فارسی `docs/USAGE.md` و `docs/INTEGRATION.md`، ساخته‌شده از `src/wplm-windows-kit`
 
 ## تاریخچه نسخه‌ها
+
+### wp-plugin-market-manager — نسخه 1.5.0
+
+- حذف فونت `Tahoma` از `public.css` و `admin.css`؛ استفاده از فونت قالب (`--wplm-font` / `--font` / `inherit`).
+- کلاس `WPLM\Support\ThemeFont` برای تشخیص فونت قالب از `theme.json`، `style.css` یا فیلتر `wplm_theme_font_family` + بارگذاری `@font-face` فونت قالب در پیشخوان.
+- کنترل‌های فرم داخل افزونه فونت را ارث می‌برند؛ `dashicons` و متن کد/لایسنس فونت اختصاصی خود را نگه می‌دارند.
+- هماهنگی با قالب آمل نوین (Vazirmatn) بدون تنظیم اضافه؛ افزونه‌ی مدیریت لایسنس هم از همین پل فونت استفاده می‌کند.
 
 ### wp-plugin-market-manager — نسخه 1.4.0
 
