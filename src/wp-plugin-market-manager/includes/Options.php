@@ -30,6 +30,11 @@ final class Options
             'store_page_id' => 0,
             'account_page_id' => 0,
             'payment_result_page_id' => 0,
+            // «افزونه‌های پرکاربرد»: حداکثر ۴ محصول که در شورتکد نمایش داده می‌شوند.
+            'featured_product_ids' => [],
+            'popular_title' => 'افزونه‌های پرکاربرد',
+            'popular_subtitle' => 'پرفروش‌ترین و پرکاربردترین محصولات آمل نوین که بیشترین استفاده را دارند',
+            'popular_show_in_store' => '1',
         ];
     }
 
@@ -49,6 +54,21 @@ final class Options
         if (false === get_option(self::KEY, false)) {
             add_option(self::KEY, self::defaults(), '', false);
         }
+    }
+
+    /**
+     * شناسه محصولات انتخاب‌شده برای بخش «افزونه‌های پرکاربرد» (حداکثر ۴ مورد، بدون تکرار).
+     */
+    public static function featured_product_ids(): array
+    {
+        $settings = self::get();
+        $ids = $settings['featured_product_ids'] ?? [];
+        if (is_string($ids)) {
+            $ids = preg_split('/[\r\n,]+/', $ids);
+        }
+        $ids = is_array($ids) ? array_map('absint', $ids) : [];
+        $ids = array_values(array_unique(array_filter($ids)));
+        return array_slice($ids, 0, 4);
     }
 
     public static function page_url(string $key): string

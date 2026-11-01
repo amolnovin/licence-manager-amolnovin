@@ -43,12 +43,20 @@ $categories = $cat_repo->all(200, true);
                         <td dir="ltr"><code><?php echo esc_html($product->slug); ?></code></td>
                         <td><?php echo self_product_type_label($product->type); ?></td>
                         <td dir="ltr"><?php echo esc_html($product->version); ?></td>
-                        <td><?php echo esc_html(number_format_i18n((float) $product->price)); ?> <?php echo esc_html($product->currency); ?></td>
+                        <td>
+                            <?php if (ProductRepository::has_sale($product)) : ?>
+                                <del><?php echo esc_html(number_format_i18n((float) $product->price)); ?></del>
+                                <span class="wplm-sale-badge"><?php echo esc_html(ProductRepository::discount_percent($product)); ?>٪</span><br>
+                                <strong><?php echo esc_html(number_format_i18n(ProductRepository::effective_price($product))); ?></strong> <?php echo esc_html($product->currency); ?>
+                            <?php else : ?>
+                                <?php echo esc_html(number_format_i18n((float) $product->price)); ?> <?php echo esc_html($product->currency); ?>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo $cat ? esc_html($cat->name) : '—'; ?></td>
                         <td><span class="wplm-status <?php echo !empty($product->is_visible) ? 'active' : 'draft'; ?>"><?php echo !empty($product->is_visible) ? 'نمایش داده شود' : 'مخفی از فرانت'; ?></span></td>
                         <td><?php $lm = $product->license_mode ?? 'required'; ?><span class="wplm-status <?php echo esc_attr($product->status); ?>"><?php echo 'active' === $product->status ? ('none' === $lm ? 'فعال بدون لایسنس' : 'فعال لایسنس‌دار') : 'پیش‌نویس'; ?></span></td>
                         <td class="wplm-actions">
-                            <button type="button" class="button" data-wplm-edit-product
+                            <button type="button" class="button wplm-icon-btn" title="ویرایش محصول" aria-label="ویرایش محصول" data-wplm-edit-product
                                 data-id="<?php echo esc_attr($product->id); ?>"
                                 data-category_id="<?php echo esc_attr($product->category_id); ?>"
                                 data-name="<?php echo esc_attr($product->name); ?>"
@@ -59,12 +67,13 @@ $categories = $cat_repo->all(200, true);
                                 data-description="<?php echo esc_attr($product->description); ?>"
                                 data-version="<?php echo esc_attr($product->version); ?>"
                                 data-price="<?php echo esc_attr($product->price); ?>"
+                                data-sale_price="<?php echo esc_attr($product->sale_price ?? ''); ?>"
                                 data-currency="<?php echo esc_attr($product->currency); ?>"
                                 data-status="<?php echo esc_attr($product->status); ?>"
                                 data-license_mode="<?php echo esc_attr($product->license_mode ?? 'required'); ?>"
                                 data-product_state="<?php echo esc_attr('active' === $product->status ? (('none' === ($product->license_mode ?? 'required')) ? 'active_none' : 'active_required') : 'draft'); ?>"
-                                data-is_visible="<?php echo esc_attr(!empty($product->is_visible) ? 1 : 0); ?>">ویرایش</button>
-                            <a class="button wplm-danger" onclick="return confirm('حذف شود؟')" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_delete_product','id'=>(int)$product->id], admin_url('admin-post.php')), 'wplm_delete_product')); ?>">حذف</a>
+                                data-is_visible="<?php echo esc_attr(!empty($product->is_visible) ? 1 : 0); ?>"><span class="dashicons dashicons-edit"></span></button>
+                            <a class="button wplm-icon-btn is-danger" title="حذف محصول" aria-label="حذف محصول" onclick="return confirm('حذف شود؟')" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_delete_product','id'=>(int)$product->id], admin_url('admin-post.php')), 'wplm_delete_product')); ?>"><span class="dashicons dashicons-trash"></span></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -96,8 +105,15 @@ $categories = $cat_repo->all(200, true);
             <p class="description">اگر غیرفعال شود، محصول همچنان فعال می‌ماند و برای لایسنس/API/آپدیت قابل استفاده است، اما در فروشگاه و کاروسل فرانت نمایش داده نمی‌شود.</p>
             <div class="wplm-two">
                 <label>نسخه<input name="version" dir="ltr" value="1.0.0"></label>
-                <label>قیمت<input name="price" type="number" step="0.01" value="0"></label>
+                <label>قیمت اصلی<input name="price" type="number" step="0.01" min="0" value="0"></label>
             </div>
+            <div class="wplm-two">
+                <label>قیمت با تخفیف (اختیاری)<input name="sale_price" type="number" step="0.01" min="0" value="" placeholder="خالی = بدون تخفیف"></label>
+                <label>پیش‌نمایش تخفیف
+                    <div class="wplm-sale-preview" data-wplm-sale-preview>بدون تخفیف</div>
+                </label>
+            </div>
+            <p class="description">اگر «قیمت با تخفیف» کمتر از قیمت اصلی باشد، در فروشگاه قیمت خط‌خورده + لیبل درصد تخفیف نمایش داده می‌شود و مبلغ پرداخت همان قیمت با تخفیف خواهد بود.</p>
             <div class="wplm-two">
                 <label>واحد پول<input name="currency" value="IRT"></label>
                 <label>تصویر شاخص

@@ -25,10 +25,10 @@ $requests = (new LicenseRepository())->requests();
                         <td dir="ltr"><?php echo !empty($item->order_id) ? '#' . esc_html((int) $item->order_id) : '—'; ?></td>
                         <td><span class="wplm-status <?php echo esc_attr($item->status); ?>"><?php echo esc_html(['pending'=>'در انتظار','approved'=>'تایید شده','rejected'=>'رد شده'][$item->status] ?? $item->status); ?></span></td>
                         <td><?php echo esc_html(mysql2date('Y/m/d H:i', $item->created_at)); ?></td>
-                        <td>
+                        <td class="wplm-actions">
                             <?php if ('pending' === $item->status) : ?>
-                                <a class="button button-primary" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_approve_request','id'=>(int)$item->id], admin_url('admin-post.php')), 'wplm_request_action')); ?>">تایید</a>
-                                <a class="button wplm-danger" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_reject_request','id'=>(int)$item->id], admin_url('admin-post.php')), 'wplm_request_action')); ?>">رد</a>
+                                <a class="button wplm-icon-btn is-success" title="تایید و صدور لایسنس" aria-label="تایید و صدور لایسنس" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_approve_request','id'=>(int)$item->id], admin_url('admin-post.php')), 'wplm_request_action')); ?>"><span class="dashicons dashicons-yes-alt"></span></a>
+                                <a class="button wplm-icon-btn is-danger" title="رد درخواست" aria-label="رد درخواست" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_reject_request','id'=>(int)$item->id], admin_url('admin-post.php')), 'wplm_request_action')); ?>"><span class="dashicons dashicons-no-alt"></span></a>
                             <?php else : ?>—<?php endif; ?>
                         </td>
                     </tr>

@@ -83,7 +83,8 @@ $status_labels = [
                     <td><?php echo !empty($license->expires_at) ? esc_html(mysql2date('Y/m/d', $license->expires_at)) : 'نامحدود'; ?></td>
                     <td><span class="wplm-status <?php echo esc_attr($license->status); ?>"><?php echo esc_html($status_labels[$license->status] ?? $license->status); ?></span></td>
                     <td class="wplm-actions">
-                        <button type="button" class="button" data-wplm-edit-license
+                        <button type="button" class="button wplm-icon-btn is-copy" title="کپی کلید لایسنس" aria-label="کپی کلید لایسنس" data-copy-license="<?php echo esc_attr($license->license_key); ?>"><span class="dashicons dashicons-clipboard"></span></button>
+                        <button type="button" class="button wplm-icon-btn" title="ویرایش لایسنس" aria-label="ویرایش لایسنس" data-wplm-edit-license
                             data-id="<?php echo esc_attr($license->id); ?>"
                             data-product_id="<?php echo esc_attr($license->product_id); ?>"
                             data-license_key="<?php echo esc_attr($license->license_key); ?>"
@@ -93,14 +94,14 @@ $status_labels = [
                             data-expires_at="<?php echo esc_attr(!empty($license->expires_at) ? gmdate('Y-m-d', strtotime($license->expires_at)) : ''); ?>"
                             data-status="<?php echo esc_attr($license->status); ?>"
                             data-domains="<?php echo esc_attr(implode("\n", $domains)); ?>"
-                            data-machine_ids="<?php echo esc_attr(implode("\n", $machine_ids)); ?>">ویرایش</button>
+                            data-machine_ids="<?php echo esc_attr(implode("\n", $machine_ids)); ?>"><span class="dashicons dashicons-edit"></span></button>
                         <?php if ('active' !== $license->status) : ?>
-                            <a class="button" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_set_license_status','id'=>(int)$license->id,'status'=>'active'], admin_url('admin-post.php')), 'wplm_license_action')); ?>">فعال</a>
+                            <a class="button wplm-icon-btn is-success" title="فعال‌سازی لایسنس" aria-label="فعال‌سازی لایسنس" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_set_license_status','id'=>(int)$license->id,'status'=>'active'], admin_url('admin-post.php')), 'wplm_license_action')); ?>"><span class="dashicons dashicons-yes-alt"></span></a>
                         <?php else : ?>
-                            <a class="button" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_set_license_status','id'=>(int)$license->id,'status'=>'inactive'], admin_url('admin-post.php')), 'wplm_license_action')); ?>">غیرفعال</a>
+                            <a class="button wplm-icon-btn" title="غیرفعال‌سازی لایسنس" aria-label="غیرفعال‌سازی لایسنس" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_set_license_status','id'=>(int)$license->id,'status'=>'inactive'], admin_url('admin-post.php')), 'wplm_license_action')); ?>"><span class="dashicons dashicons-controls-pause"></span></a>
                         <?php endif; ?>
-                        <a class="button wplm-danger" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_set_license_status','id'=>(int)$license->id,'status'=>'suspended'], admin_url('admin-post.php')), 'wplm_license_action')); ?>">مسدود</a>
-                        <a class="button" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_resend_license','id'=>(int)$license->id], admin_url('admin-post.php')), 'wplm_license_action')); ?>">ارسال</a>
+                        <a class="button wplm-icon-btn is-danger" title="مسدود کردن لایسنس" aria-label="مسدود کردن لایسنس" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_set_license_status','id'=>(int)$license->id,'status'=>'suspended'], admin_url('admin-post.php')), 'wplm_license_action')); ?>"><span class="dashicons dashicons-dismiss"></span></a>
+                        <a class="button wplm-icon-btn is-version" title="ارسال مجدد اطلاعات لایسنس" aria-label="ارسال مجدد اطلاعات لایسنس" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_resend_license','id'=>(int)$license->id], admin_url('admin-post.php')), 'wplm_license_action')); ?>"><span class="dashicons dashicons-email-alt"></span></a>
                     </td>
                 </tr>
             <?php endforeach; ?>

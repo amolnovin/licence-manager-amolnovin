@@ -1,5 +1,6 @@
 <?php
 use WPLM\Options;
+use WPLM\Repositories\ProductRepository;
 use WPLM\Services\SmsService;
 
 defined('ABSPATH') || exit;
@@ -7,6 +8,9 @@ $title = 'تنظیمات سامانه';
 $info_notice = 'تنظیمات فروش اختصاصی، درگاه زیبال، صفحات عمومی، لایسنس و پیامک از این بخش کنترل می‌شود.';
 require WPLM_PATH . 'admin/views/header.php';
 $settings = Options::get();
+$featured_ids = Options::featured_product_ids();
+$featured_ids = array_pad(array_slice($featured_ids, 0, 4), 4, 0);
+$all_products = (new ProductRepository())->all(300);
 $pages = get_pages(['sort_column' => 'post_title', 'sort_order' => 'ASC']);
 $page_select = static function (string $name, int $selected) use ($pages): void {
     echo '<select name="' . esc_attr($name) . '"><option value="0">انتخاب صفحه</option>';
@@ -30,6 +34,28 @@ $page_select = static function (string $name, int $selected) use ($pages): void 
         <label>صفحه حساب کاربری<?php $page_select('account_page_id', (int) $settings['account_page_id']); ?></label>
     </div>
     <label>صفحه نتیجه خرید<?php $page_select('payment_result_page_id', (int) $settings['payment_result_page_id']); ?></label>
+
+    <h2>افزونه‌های پرکاربرد</h2>
+    <p class="description">حداکثر ۴ محصول را انتخاب کنید؛ این محصولات در بخش «افزونه‌های پرکاربرد» شورتکدها نمایش داده می‌شوند. برای حذف یک محصول، گزینه «انتخاب نشده» را بگذارید.</p>
+    <div class="wplm-two">
+        <?php foreach ($featured_ids as $index => $featured_id) : ?>
+            <label>محصول پرکاربرد <?php echo esc_html((string) (count($featured_ids) - $index)); ?>
+                <select name="featured_product_ids[]">
+                    <option value="0">انتخاب نشده</option>
+                    <?php foreach ($all_products as $product_option) : ?>
+                        <?php if ('active' !== $product_option->status) { continue; } ?>
+                        <option value="<?php echo esc_attr($product_option->id); ?>" <?php selected((int) $featured_id, (int) $product_option->id); ?>><?php echo esc_html($product_option->name); ?> — <?php echo esc_html($product_option->slug); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+        <?php endforeach; ?>
+    </div>
+    <div class="wplm-two">
+        <label>عنوان بخش<input name="popular_title" value="<?php echo esc_attr($settings['popular_title']); ?>" placeholder="افزونه‌های پرکاربرد"></label>
+        <label>زیرنویس بخش<input name="popular_subtitle" value="<?php echo esc_attr($settings['popular_subtitle']); ?>"></label>
+    </div>
+    <label class="wplm-check"><input type="checkbox" name="popular_show_in_store" value="1" <?php checked($settings['popular_show_in_store'], '1'); ?>> نمایش خودکار این بخش در بالای صفحه فروشگاه (<code dir="ltr">[wplm_store]</code>)</label>
+    <p class="description">برای نمایش در هر جای دیگر از شورتکد <code dir="ltr">[wplm_popular]</code> استفاده کنید. تا وقتی هیچ محصولی انتخاب نشده باشد، بخش نمایش داده نمی‌شود.</p>
 
     <h2>درگاه پرداخت</h2>
     <label>درگاه پیش‌فرض

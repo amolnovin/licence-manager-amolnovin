@@ -122,9 +122,7 @@ final class Activator
             PRIMARY KEY  (id),
             UNIQUE KEY slug (slug),
             KEY status (status),
-            KEY type (type),
-            KEY license_mode (license_mode),
-            KEY is_visible (is_visible)
+            KEY type (type)
         ) {$charset};";
 
         $sql[] = "CREATE TABLE {$products} (
@@ -138,6 +136,7 @@ final class Activator
             description LONGTEXT NULL,
             version VARCHAR(50) NOT NULL DEFAULT '1.0.0',
             price DECIMAL(18,2) NOT NULL DEFAULT 0,
+            sale_price DECIMAL(18,2) NULL,
             currency VARCHAR(10) NOT NULL DEFAULT 'IRT',
             license_mode VARCHAR(20) NOT NULL DEFAULT 'required',
             is_visible TINYINT(1) NOT NULL DEFAULT 1,

@@ -39,8 +39,8 @@ $edit = $edit_id ? $repo->find($edit_id) : null;
                         <td><?php echo esc_html(['all'=>'عمومی','plugin'=>'افزونه','theme'=>'قالب'][$cat->type] ?? $cat->type); ?></td>
                         <td><span class="wplm-status <?php echo esc_attr($cat->status); ?>"><?php echo 'active' === $cat->status ? 'فعال' : 'غیرفعال'; ?></span></td>
                         <td>
-                            <a class="button" href="<?php echo esc_url(add_query_arg(['page'=>'wplm-categories','edit'=>(int)$cat->id], admin_url('admin.php'))); ?>">ویرایش</a>
-                            <a class="button wplm-danger" onclick="return confirm('حذف شود؟')" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_delete_category','id'=>(int)$cat->id], admin_url('admin-post.php')), 'wplm_delete_category')); ?>">حذف</a>
+                            <a class="button wplm-icon-btn" title="ویرایش دسته‌بندی" aria-label="ویرایش دسته‌بندی" href="<?php echo esc_url(add_query_arg(['page'=>'wplm-categories','edit'=>(int)$cat->id], admin_url('admin.php'))); ?>"><span class="dashicons dashicons-edit"></span></a>
+                            <a class="button wplm-icon-btn is-danger" title="حذف دسته‌بندی" aria-label="حذف دسته‌بندی" onclick="return confirm('حذف شود؟')" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_delete_category','id'=>(int)$cat->id], admin_url('admin-post.php')), 'wplm_delete_category')); ?>"><span class="dashicons dashicons-trash"></span></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

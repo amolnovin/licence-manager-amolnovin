@@ -34,6 +34,106 @@ final class Shortcodes
         return false;
     }
 
+    /**
+     * لیبل گرافیکی درصد تخفیف (روی کارت محصول).
+     */
+    private static function sale_ribbon($product): string
+    {
+        $percent = ProductRepository::discount_percent($product);
+        if ($percent < 1) {
+            return '';
+        }
+        return '<span class="wplm-sale-ribbon" title="تخفیف ویژه"><b>' . esc_html(number_format_i18n($percent)) . '</b>٪ تخفیف</span>';
+    }
+
+    /**
+     * نمایش قیمت: اگر تخفیف فعال باشد، قیمت اصلی خط‌خورده + قیمت نهایی + درصد.
+     */
+    private static function price_html($product, string $class = 'wplm-card-price'): string
+    {
+        $currency = esc_html((string) $product->currency);
+        $price = (float) $product->price;
+        if (!ProductRepository::has_sale($product)) {
+            return '<div class="' . esc_attr($class) . '"><strong class="wplm-price-final">'
+                . esc_html(number_format_i18n($price)) . ' <span>' . $currency . '</span></strong></div>';
+        }
+        $sale = ProductRepository::effective_price($product);
+        $percent = ProductRepository::discount_percent($product);
+        return '<div class="' . esc_attr($class) . '">'
+            . '<del class="wplm-price-old">' . esc_html(number_format_i18n($price)) . ' ' . $currency . '</del>'
+            . '<strong class="wplm-price-final">' . esc_html(number_format_i18n($sale)) . ' <span>' . $currency . '</span></strong>'
+            . '<span class="wplm-sale-chip">' . esc_html(number_format_i18n($percent)) . '٪ تخفیف</span>'
+            . '</div>';
+    }
+
+    /**
+     * بخش «افزونه‌های پرکاربرد»: حداکثر ۴ محصول انتخاب‌شده در تنظیمات.
+     */
+    public static function popular(array $atts = []): string
+    {
+        wp_enqueue_style('wplm-public');
+        $settings = Options::get();
+        $ids = Options::featured_product_ids();
+        if (!$ids) {
+            return '';
+        }
+
+        $repo = new ProductRepository();
+        $products = array_values(array_filter($repo->by_ids($ids), static function ($product) {
+            return $product && 'active' === $product->status && !empty($product->is_visible);
+        }));
+        if (!$products) {
+            return '';
+        }
+
+        $atts = shortcode_atts([
+            'title' => (string) ($settings['popular_title'] ?? 'افزونه‌های پرکاربرد'),
+            'subtitle' => (string) ($settings['popular_subtitle'] ?? ''),
+            'button' => 'مشاهده همه محصولات',
+        ], $atts, 'wplm_popular');
+
+        $store_url = Options::page_url('store_page_id');
+        ob_start();
+        ?>
+        <section class="wplm-store wplm-popular-section" dir="rtl">
+            <div class="wplm-popular-head">
+                <div>
+                    <?php if ('' !== trim((string) $atts['title'])) : ?><h2><?php echo esc_html($atts['title']); ?></h2><?php endif; ?>
+                    <?php if ('' !== trim((string) $atts['subtitle'])) : ?><p><?php echo esc_html($atts['subtitle']); ?></p><?php endif; ?>
+                </div>
+                <a class="wplm-btn ghost" href="<?php echo esc_url($store_url); ?>"><?php echo esc_html($atts['button']); ?></a>
+            </div>
+            <div class="wplm-popular-grid">
+                <?php foreach ($products as $product) : $product_url = add_query_arg('product', $product->slug, $store_url); ?>
+                    <article class="wplm-popular-card">
+                        <?php echo self::sale_ribbon($product); ?>
+                        <a class="wplm-popular-cover" href="<?php echo esc_url($product_url); ?>">
+                            <?php if (!empty($product->cover_url)) : ?>
+                                <img src="<?php echo esc_url($product->cover_url); ?>" alt="<?php echo esc_attr($product->name); ?>" loading="lazy">
+                            <?php else : ?>
+                                <span class="wplm-popular-placeholder">AMN</span>
+                            <?php endif; ?>
+                        </a>
+                        <div class="wplm-card-tags">
+                            <span class="wplm-pill"><?php echo esc_html(self::type_label((string) $product->type)); ?></span>
+                            <span class="wplm-pill secondary"><?php echo 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار'; ?></span>
+                        </div>
+                        <h3><a href="<?php echo esc_url($product_url); ?>"><?php echo esc_html($product->name); ?></a></h3>
+                        <?php if (!empty($product->short_description)) : ?>
+                            <p class="wplm-popular-desc"><?php echo esc_html(wp_trim_words((string) $product->short_description, 18, '…')); ?></p>
+                        <?php endif; ?>
+                        <div class="wplm-popular-foot">
+                            <?php echo self::price_html($product); ?>
+                            <a class="wplm-btn" href="<?php echo esc_url($product_url); ?>">مشاهده و خرید</a>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php
+        return (string) ob_get_clean();
+    }
+
     private static function front_nav(): string
     {
         $store_url = Options::page_url('store_page_id');
@@ -100,7 +200,7 @@ final class Shortcodes
                 <?php foreach ($products as $product) :
                     $product_url = add_query_arg('product', $product->slug, $store_url);
                     $license_label = 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار';
-                    $type_label = self_type_label($product->type);
+                    $type_label = self::type_label($product->type);
                 ?>
                     <article class="wplm-home-product-card">
                         <a class="wplm-home-product-cover" href="<?php echo esc_url($product_url); ?>">
@@ -110,6 +210,7 @@ final class Shortcodes
                                 <span class="wplm-home-placeholder">AMN</span>
                             <?php endif; ?>
                         </a>
+                        <?php echo self::sale_ribbon($product); ?>
                         <div class="wplm-home-product-body">
                             <div class="wplm-card-tags">
                                 <a class="wplm-pill" href="<?php echo esc_url(add_query_arg('type', $product->type, $store_url)); ?>"><?php echo esc_html($type_label); ?></a>
@@ -117,6 +218,7 @@ final class Shortcodes
                             </div>
                             <h3><a href="<?php echo esc_url($product_url); ?>"><?php echo esc_html($product->name); ?></a></h3>
                             <div class="wplm-home-product-foot">
+                                <?php echo self::price_html($product); ?>
                                 <a class="wplm-home-view" href="<?php echo esc_url($product_url); ?>">مشاهده محصول</a>
                             </div>
                         </div>
@@ -189,6 +291,12 @@ final class Shortcodes
                 <h2>افزونه‌ها و قالب‌های حرفه‌ای</h2>
                 <p>محصول موردنظر را انتخاب کنید، اطلاعات خرید را وارد کنید و پس از پرداخت زیبال، لایسنس در حساب کاربری شما فعال می‌شود.</p>
             </header>
+            <?php
+            // بخش «افزونه‌های پرکاربرد» (در صورت فعال بودن در تنظیمات) فقط در صفحهٔ اصلی فروشگاه.
+            if ('1' === (string) Options::get()['popular_show_in_store']) {
+                echo self::popular();
+            }
+            ?>
             <nav class="wplm-filters">
                 <a class="<?php echo !$type && !$category ? 'active' : ''; ?>" href="<?php echo esc_url($base); ?>">همه</a>
                 <a class="<?php echo 'plugin' === $type ? 'active' : ''; ?>" href="<?php echo esc_url(add_query_arg('type', 'plugin', $base)); ?>">افزونه‌ها</a>
@@ -203,12 +311,14 @@ final class Shortcodes
             <div class="wplm-public-grid">
                 <?php foreach ($products as $product) : ?>
                     <article class="wplm-public-card">
+                        <?php echo self::sale_ribbon($product); ?>
                         <?php if (!empty($product->cover_url)) : ?><img src="<?php echo esc_url($product->cover_url); ?>" alt="<?php echo esc_attr($product->name); ?>"><?php endif; ?>
                         <div class="wplm-card-body">
-                            <div class="wplm-card-tags"><a class="wplm-pill" href="<?php echo esc_url(add_query_arg('type', $product->type, $base)); ?>"><?php echo self_type_label($product->type); ?></a><a class="wplm-pill secondary" href="<?php echo esc_url(add_query_arg('license', ($product->license_mode ?? 'required'), $base)); ?>"><?php echo 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار'; ?></a></div>
+                            <div class="wplm-card-tags"><a class="wplm-pill" href="<?php echo esc_url(add_query_arg('type', $product->type, $base)); ?>"><?php echo self::type_label($product->type); ?></a><a class="wplm-pill secondary" href="<?php echo esc_url(add_query_arg('license', ($product->license_mode ?? 'required'), $base)); ?>"><?php echo 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار'; ?></a></div>
                             <h3><?php echo esc_html($product->name); ?></h3>
                             <p><?php echo esc_html(wp_trim_words($product->short_description ?: wp_strip_all_tags(do_shortcode((string) $product->description)), 45, '...')); ?></p>
                             <div class="wplm-card-footer">
+                                <?php echo self::price_html($product); ?>
                                 <a class="wplm-btn" href="<?php echo esc_url(add_query_arg('product', $product->slug, $base)); ?>">مشاهده و خرید</a>
                             </div>
                         </div>
@@ -263,7 +373,15 @@ final class Shortcodes
                 </article>
                 <aside class="wplm-checkout-card wplm-sticky-buy">
                     <h3>خرید محصول</h3>
-                    <div class="wplm-price"><?php echo esc_html(number_format_i18n((float) $product->price)); ?> <span><?php echo esc_html($product->currency); ?></span></div>
+                    <div class="wplm-card-price">
+                        <?php if (ProductRepository::has_sale($product)) : ?>
+                            <del class="wplm-price-old"><?php echo esc_html(number_format_i18n((float) $product->price)); ?> <?php echo esc_html($product->currency); ?></del>
+                            <strong class="wplm-price-final"><?php echo esc_html(number_format_i18n(ProductRepository::effective_price($product))); ?> <span><?php echo esc_html($product->currency); ?></span></strong>
+                            <span class="wplm-sale-chip"><?php echo esc_html(number_format_i18n(ProductRepository::discount_percent($product))); ?>٪ تخفیف</span>
+                        <?php else : ?>
+                            <strong class="wplm-price-final"><?php echo esc_html(number_format_i18n((float) $product->price)); ?> <span><?php echo esc_html($product->currency); ?></span></strong>
+                        <?php endif; ?>
+                    </div>
                     <ul>
                         <li>درگاه پیش‌فرض: <b><?php echo esc_html($gateway_label); ?></b></li>
                         <li>وضعیت: <b><?php echo $already_bought ? 'قبلاً خریداری شده' : 'آماده خرید'; ?></b></li>
@@ -297,7 +415,7 @@ final class Shortcodes
             return '<div class="wplm-store" dir="rtl">' . self::front_nav() . '<div class="wplm-auth-box"><h2>ورود برای ادامه خرید</h2><p>برای مشاهده سفارش و پرداخت آنلاین ابتدا وارد حساب کاربری شوید.</p><a class="wplm-btn" href="' . esc_url(wp_login_url($cart_url)) . '">ورود به وردپرس</a></div></div>';
         }
         $user = wp_get_current_user();
-        $subtotal = array_sum(array_map(static fn($p) => (float) $p->price, $products));
+        $subtotal = array_sum(array_map(static fn($p) => ProductRepository::effective_price($p), $products));
         ob_start();
         ?>
         <div class="wplm-store wplm-cart" dir="rtl">
@@ -316,9 +434,9 @@ final class Shortcodes
                                         <?php if (!empty($product->cover_url)) : ?><img src="<?php echo esc_url($product->cover_url); ?>" alt=""><?php endif; ?>
                                         <div><strong><?php echo esc_html($product->name); ?></strong><small><?php echo esc_html($product->short_description); ?></small></div>
                                     </td>
-                                    <td><?php echo self_type_label($product->type); ?></td>
+                                    <td><?php echo self::type_label($product->type); ?></td>
                                     <td><span class="wplm-pill secondary"><?php echo 'none' === ($product->license_mode ?? 'required') ? 'بدون لایسنس' : 'لایسنس‌دار'; ?></span></td>
-                                    <td><strong><?php echo esc_html(number_format_i18n((float) $product->price)); ?></strong> <?php echo esc_html($product->currency); ?></td>
+                                    <td><?php echo self::price_html($product); ?></td>
                                     <td><a class="wplm-remove" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'wplm_remove_from_cart','product_id'=>(int)$product->id], admin_url('admin-post.php')), 'wplm_remove_cart_item')); ?>">×</a></td>
                                 </tr>
                             <?php endforeach; ?>
@@ -336,7 +454,7 @@ final class Shortcodes
                         <label>نام و نام خانوادگی<input name="customer_name" required value="<?php echo esc_attr($user->display_name); ?>"></label>
                         <label>ایمیل<input name="customer_email" type="email" required dir="ltr" value="<?php echo esc_attr($user->user_email); ?>"></label>
                         <label>موبایل<input name="customer_mobile" required dir="ltr" placeholder="09123456789"></label>
-                        <?php if (self_cart_has_windows($products)) : ?>
+                        <?php if (self::cart_has_windows($products)) : ?>
                             <label>شناسه ماشین (machine_id) برای فعال‌سازی روی کامپیوتر<input name="machine_id" dir="ltr" placeholder="4d75bfe14a964dcfb15b6741b2ef6bc2"></label>
                         <?php else : ?>
                             <label>دامنه برای فعال‌سازی اولیه<input name="domain" dir="ltr" placeholder="example.com"></label>
@@ -433,7 +551,7 @@ final class Shortcodes
                                     ?>
                                         <article class="wplm-purchase-card">
                                             <?php if (!empty($item->cover_url)) : ?><img src="<?php echo esc_url($item->cover_url); ?>" alt=""><?php endif; ?>
-                                            <div><span class="wplm-pill"><?php echo 'theme' === $item->product_type ? 'قالب' : 'افزونه'; ?></span><h4><?php echo esc_html($item->product_name); ?></h4><small>سفارش #<?php echo esc_html((int) $order->id); ?></small></div>
+                                            <div><span class="wplm-pill"><?php echo esc_html(self::type_label((string) ($item->product_type ?? 'plugin'))); ?></span><h4><?php echo esc_html($item->product_name); ?></h4><small>سفارش #<?php echo esc_html((int) $order->id); ?></small></div>
                                             <div class="wplm-purchase-actions">
                                                 <button type="button" class="wplm-btn ghost" data-wplm-open-purchase="<?php echo esc_attr($modal_id); ?>">جزئیات</button>
                                                 <?php if ($download_url) : ?><a class="wplm-btn" href="<?php echo esc_url($download_url); ?>">دانلود</a><?php endif; ?>

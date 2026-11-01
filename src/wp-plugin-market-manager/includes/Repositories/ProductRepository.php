@@ -53,6 +53,67 @@ final class ProductRepository
         return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE status = 'active' AND is_visible = 1 ORDER BY id DESC LIMIT %d", max(1, $limit)));
     }
 
+    /**
+     * محصولات بر اساس فهرست شناسه‌ها، با حفظ ترتیب ورودی (برای «افزونه‌های پرکاربرد»).
+     */
+    public function by_ids(array $ids): array
+    {
+        global $wpdb;
+        $ids = array_values(array_filter(array_map('absint', $ids)));
+        if (!$ids) {
+            return [];
+        }
+        $table = Database::table('products');
+        $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE id IN ({$placeholders})", $ids));
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row->id] = $row;
+        }
+        $ordered = [];
+        foreach ($ids as $id) {
+            if (isset($map[$id])) {
+                $ordered[] = $map[$id];
+            }
+        }
+        return $ordered;
+    }
+
+    /**
+     * قیمت فروش نهایی محصول: اگر قیمت با تخفیف معتبر باشد همان، وگرنه قیمت اصلی.
+     */
+    public static function effective_price($product): float
+    {
+        $price = (float) ($product->price ?? 0);
+        $sale = (float) ($product->sale_price ?? 0);
+        if ($sale > 0 && $sale < $price) {
+            return $sale;
+        }
+        return $price;
+    }
+
+    /**
+     * آیا محصول قیمت با تخفیف فعال دارد؟
+     */
+    public static function has_sale($product): bool
+    {
+        $price = (float) ($product->price ?? 0);
+        $sale = (float) ($product->sale_price ?? 0);
+        return $sale > 0 && $sale < $price;
+    }
+
+    /**
+     * درصد تخفیف (گرد‌شده) برای نمایش لیبل گرافیکی.
+     */
+    public static function discount_percent($product): int
+    {
+        if (!self::has_sale($product)) {
+            return 0;
+        }
+        $price = (float) $product->price;
+        return (int) max(1, round((($price - (float) $product->sale_price) / $price) * 100));
+    }
+
     public function find(int $id)
     {
         global $wpdb;
@@ -83,6 +144,7 @@ final class ProductRepository
             'description' => $data['description'],
             'version' => $data['version'],
             'price' => $data['price'],
+            'sale_price' => !empty($data['sale_price']) && (float) $data['sale_price'] > 0 ? (float) $data['sale_price'] : null,
             'currency' => $data['currency'],
             'license_mode' => isset($data['license_mode']) && 'none' === $data['license_mode'] ? 'none' : 'required',
             'is_visible' => isset($data['is_visible']) ? absint($data['is_visible']) : 1,
@@ -90,7 +152,7 @@ final class ProductRepository
             'updated_at' => $now,
         ];
 
-        $formats = ['%d','%s','%s','%s','%s','%s','%s','%s','%f','%s','%s','%d','%s','%s'];
+        $formats = ['%d','%s','%s','%s','%s','%s','%s','%s','%f','%f','%s','%s','%d','%s','%s'];
 
         if (!empty($data['id'])) {
             $wpdb->update($table, $payload, ['id' => (int) $data['id']], $formats, ['%d']);

@@ -3,7 +3,7 @@
  * Plugin Name: سامانه فروش و لایسنس افزونه و قالب
  * Plugin URI:  https://example.com
  * Description: سامانه اختصاصی فروش، معرفی، لایسنس آنلاین، بروزرسانی و پیامک برای افزونه‌ها و قالب‌های وردپرس.
- * Version:     1.3.1
+ * Version:     1.4.0
  * Author:      Arena.ai
  * Text Domain: wp-plugin-market-manager
  * Domain Path: /languages
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') || exit;
 
-define('WPLM_VERSION', '1.3.1');
+define('WPLM_VERSION', '1.4.0');
 define('WPLM_FILE', __FILE__);
 define('WPLM_PATH', plugin_dir_path(__FILE__));
 define('WPLM_URL', plugin_dir_url(__FILE__));
