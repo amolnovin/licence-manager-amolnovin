@@ -3,7 +3,7 @@
  * Plugin Name: لایسنس منیجر آمل نوین
  * Plugin URI: https://amolnovin.ir
  * Description: مدیریت مرکزی لایسنس افزونه‌هایی که با WPLM Client Kit و wp-plugin-market-manager کار می‌کنند.
- * Version: 1.0.7
+ * Version: 1.0.8
  * Author: Amol Novin
  * Text Domain: wplm-amolnovin-license-manager
  * Requires at least: 6.0
@@ -59,6 +59,36 @@ if (!class_exists('WPLM_Amolnovin_License_Manager')) {
             );
         }
 
+        /**
+         * CSS فونت قالب فعال: اگر افزونه‌ی فروشگاه نصب باشد از پل فونت مشترک آن استفاده می‌کند،
+         * وگرنه استک فونت را از theme.json می‌خواند. خروجی خالی یعنی فونت پیشخوان وردپرس.
+         */
+        private static function theme_font_css(): string
+        {
+            if (class_exists('\\WPLM\\Support\\ThemeFont')) {
+                return (string) \WPLM\Support\ThemeFont::css_for('.wplm-manager-wrap');
+            }
+
+            $stack = '';
+
+            if (function_exists('wp_get_global_settings')) {
+                $families = wp_get_global_settings(['typography', 'fontFamilies']);
+
+                if (is_array($families) && !empty($families[0]['fontFamily']) && is_string($families[0]['fontFamily'])) {
+                    $stack = $families[0]['fontFamily'];
+                }
+            }
+
+            $stack = trim(str_replace(['{', '}', '<', '>', ';'], '', $stack));
+
+            if ($stack === '') {
+                return '';
+            }
+
+            return '.wplm-manager-wrap{font-family:' . $stack . '}'
+                . '.wplm-manager-wrap button,.wplm-manager-wrap input,.wplm-manager-wrap select,.wplm-manager-wrap textarea{font-family:inherit}';
+        }
+
         public static function page_url(array $args = []): string
         {
             return add_query_arg(array_merge(['page' => self::$page_slug], $args), admin_url('options-general.php'));
@@ -72,14 +102,16 @@ if (!class_exists('WPLM_Amolnovin_License_Manager')) {
             $clients = self::$clients;
             $registered = get_option('wplm_client_kit_registered_products', []);
             $registered = is_array($registered) ? $registered : [];
+            $font_css = self::theme_font_css();
             ?>
-            <div class="wrap" dir="rtl">
+            <div class="wrap wplm-manager-wrap" dir="rtl">
                 <?php if (!empty($_GET['wplm_saved'])) : ?><div class="notice notice-success is-dismissible"><p>لایسنس ذخیره و بررسی شد.</p></div><?php endif; ?>
                 <?php if (!empty($_GET['wplm_checked'])) : ?><div class="notice notice-success is-dismissible"><p>وضعیت لایسنس دوباره بررسی شد.</p></div><?php endif; ?>
                 <?php if (!empty($_GET['wplm_cleared'])) : ?><div class="notice notice-warning is-dismissible"><p>لایسنس محلی حذف شد.</p></div><?php endif; ?>
                 <?php if (!empty($_GET['wplm_error'])) : ?><div class="notice notice-error is-dismissible"><p><?php echo esc_html(wp_unslash($_GET['wplm_error'])); ?></p></div><?php endif; ?>
 
                 <style>
+                    <?php echo $font_css; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS ساخته‌شده در همین کلاس ?>
                     .wplm-manager-hero{background:linear-gradient(135deg,#111827,#4f46e5 55%,#06b6d4);color:#fff;border-radius:20px;padding:22px 24px;margin:18px 0;box-shadow:0 18px 45px rgba(79,70,229,.18)}
                     .wplm-manager-hero h2{color:#fff;margin:0 0 8px;font-size:24px}.wplm-manager-hero p{margin:0;opacity:.92}
                     .wplm-manager-card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:18px;margin:16px 0;box-shadow:0 12px 35px rgba(15,23,42,.06)}
